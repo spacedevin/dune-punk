@@ -676,6 +676,8 @@
     "dune.activity-item-active-bg": "linear-gradient(135deg, #5DF4FE 0 3px, transparent 3px), linear-gradient(315deg, #5DF4FE 0 3px, transparent 3px), linear-gradient(135deg, transparent 0 5px, #355D65CC 5px calc(100% - 5px), transparent calc(100% - 5px)) 1px 1px / calc(100% - 2px) calc(100% - 2px) no-repeat, linear-gradient(135deg, transparent 0 5.4px, #5DF4FE 5.4px calc(100% - 5.4px), transparent calc(100% - 5.4px))",
     "dune.activity-item-radius-top": "0px",
     "dune.activity-item-fg-top": "#469DA5",
+    "dune.activity-item-active-bg-top": "linear-gradient(315deg, #5DF4FE 0 4px, transparent 4px), linear-gradient(#5DF4FE, #5DF4FE) 0 0 / 3px 100% no-repeat, linear-gradient(315deg, transparent 0 7px, #355D65 7px) 6px 1px / calc(100% - 7px) calc(100% - 2px) no-repeat, linear-gradient(315deg, transparent 0 7.4px, #5DF4FE 7.4px) 5px 0 / calc(100% - 5px) 100% no-repeat",
+    "dune.activity-item-hover-bg-top": "linear-gradient(#FF5048, #FF5048) 0 0 / 3px 100% no-repeat, linear-gradient(315deg, transparent 0 7px, #130F1E 7px) 6px 1px / calc(100% - 7px) calc(100% - 2px) no-repeat, linear-gradient(315deg, transparent 0 7.4px, #FF5048 7.4px) 5px 0 / calc(100% - 5px) 100% no-repeat",
     "dune.activity-seg-1": "transparent",
     "dune.activity-seg-2": "transparent",
     "dune.activity-seg-3": "transparent",

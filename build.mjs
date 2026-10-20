@@ -289,6 +289,9 @@ function duneChrome(p) {
     "dune.activity-item-active-bg": K ? kbox(p.focus, a(p.accent, "CC"), 5) : `${stripe(p.accent)}, ${cutBR(a(p.accent, "30"), 8)}`,
     "dune.activity-item-radius-top": "0px",
     "dune.activity-item-fg-top": p.textMuted,
+    // Top-mode rail buttons (the default layout): the same Kvantum button as everywhere else.
+    "dune.activity-item-active-bg-top": K ? kbtn(p.frame2, p.frame2, p.accent, p.frame2) : a(p.text, "14"),
+    "dune.activity-item-hover-bg-top": K ? kbtn(p.frame, p.frame, p.button) : a(p.text, "0F"),
     "dune.activity-seg-1": K ? "transparent" : stripe(a(p.seg[0], "AA"), 2),
     "dune.activity-seg-2": K ? "transparent" : stripe(a(p.seg[1], "AA"), 2),
     "dune.activity-seg-3": K ? "transparent" : stripe(a(p.seg[2], "AA"), 2),
