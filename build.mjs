@@ -186,9 +186,9 @@ function duneChrome(p) {
     // Daemon: ONE line between panes, never two. Kvantum drops per-pane outlines and lets a 1px gap
     // over a frame-colored canvas draw the single divider (and the outer window frame).
     "dune.part-border-width": K ? "0px" : "1px",
-    "dune.part-gap": K ? "0px" : "6px",
+    "dune.part-gap": K ? "6px" : "6px",
     "dune.part-pad": K ? "0px" : "6px",
-    "dune.split-size": K ? "4px" : "6px",
+    "dune.split-size": "6px",
     "dune.elev-1": `0 0 0 1px ${a(p.frame, "33")}`,
     "dune.elev-2": `0 0 0 1px ${a(p.frame, "77")}, 0 10px 28px ${a("#000000", "99")}`,
     "dune.elev-3": `0 0 0 1px ${p.frame}, 0 0 24px ${a(p.frame, "33")}, 0 20px 48px ${a("#000000", "AA")}`,
@@ -222,7 +222,9 @@ function duneChrome(p) {
     "dune.titlebar-traffic-pad": K ? "80px" : "96px",
     "dune.titlebar-h": "36px",
     "dune.titlebar-radius": "0px",
-    "dune.surface-titleBar": K && !onTitle
+    "dune.surface-titleBar": K && onTitle
+      ? p.titleBg
+      : K && !onTitle
       ? `linear-gradient(180deg, ${p.frame} 0 3px, transparent 3px), linear-gradient(0deg, ${p.frame} 0 1px, transparent 1px), ${p.titleBg}`
       : `linear-gradient(0deg, ${p.frame} 0 1px, transparent 1px), ${p.titleBg}`,
     "dune.titlebar-fg": p.titleFg,
