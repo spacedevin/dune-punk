@@ -60,7 +60,7 @@ function cornerSvg(p, mirror) {
   const cap = `M${pts([[0, 18], [18, 0], [40, 0], [36, 4], [20, 4], [4, 20], [4, 44], [0, 48]])} Z`;
   const topArm = `<rect x='40' y='${mirror ? 158.5 : 0}' width='60' height='1.5' fill='${enc(p.frame)}'/>`;
   const leftArm = `<rect x='0' y='${mirror ? 0 : 48}' width='1.5' height='112' fill='${enc(p.frame)}'/>`;
-  const hot = `<rect x='7' y='${mirror ? 160 - 31 : 26}' width='5' height='5' fill='${enc(p.frame2)}'/>`;
+  const hot = `<rect x='7' y='${mirror ? 160 - 31 : 26}' width='5' height='5' fill='${enc(!mirror && p.titleIsBlock ? p.titleFg : p.frame2)}'/>`;
   const ticks = BARCODE.map(([x, w]) => `<rect x='${x}' y='${mirror ? 160 - 8 : 4}' width='${w}' height='4' fill='${enc(p.frame)}' fill-opacity='0.7'/>`).join("");
   const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 160'><path fill='${enc(p.frame)}' d='${cap}'/>${topArm}${leftArm}${hot}${ticks}</svg>`;
   return `url("data:image/svg+xml,${svg.replace(/</g, "%3C").replace(/>/g, "%3E")}")`;
@@ -234,6 +234,12 @@ function duneChrome(p) {
       ? `${marker(p.titleFg)}, ${marker(p.titleFg, 315)}, ${p.omnibarBg ?? p.hot}`
       : K ? kbox(p.frame, p.input) : `${marker(p.hot)}, ${marker(p.frame, 315)}, ${p.input}`,
     "dune.titlebar-omnibar-max-w": "560px",
+    // Pressed toggles on a colored band invert (ink square, band-colored glyph) like Aurorae's
+    // square window glyphs; the ⌘P chip does the same.
+    "dune.titlebar-btn-active-bg": onTitle ? p.titleFg : p.accent,
+    "dune.titlebar-btn-active-fg": onTitle ? p.titleBg : p.accentFg,
+    "dune.titlebar-kbd-bg": onTitle ? p.titleFg : p.raised,
+    "dune.titlebar-kbd-fg": onTitle ? p.titleBg : p.text,
 
     "// ——— Activity rail: neon stripe segments ———": "",
     "dune.activity-col": "48px",
