@@ -239,8 +239,8 @@ function duneChrome(p) {
     "dune.titlebar-omnibar-max-w": "560px",
     // Pressed toggles on a colored band invert (ink square, band-colored glyph) like Aurorae's
     // square window glyphs; the ⌘P chip does the same.
-    "dune.titlebar-btn-active-bg": onTitle ? p.titleFg : p.accent,
-    "dune.titlebar-btn-active-fg": onTitle ? p.titleBg : p.accentFg,
+    "dune.titlebar-btn-active-bg": onTitle ? "transparent" : p.accent,
+    "dune.titlebar-btn-active-fg": onTitle ? p.titleFg : p.accentFg,
     "dune.titlebar-kbd-bg": onTitle ? p.titleFg : p.raised,
     "dune.titlebar-kbd-fg": onTitle ? p.titleBg : p.text,
 
