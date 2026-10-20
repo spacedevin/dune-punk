@@ -203,11 +203,12 @@ function duneChrome(p) {
     "dune.activity-anim": p.activityAnim ? "dune-lcars-pulse 4.8s ease-in-out infinite" : "none",
 
     "// ——— Frame: chamfered corner brackets ———": "",
-    "dune.frame-corner-size": notPhone("100px"),
+    // Daemon windows are a plain 1px frame — no decorative corner brackets.
+    "dune.frame-corner-size": K ? "0px" : notPhone("100px"),
     "dune.frame-corner-h-tl": notPhone("160px"),
     "dune.frame-corner-img-tl": cornerSvg(p, false),
     "dune.frame-corner-img-bl": cornerSvg(p, true),
-    "dune.statusbar-lead-pad": notPhone("26px"),
+    "dune.statusbar-lead-pad": K ? "0px" : notPhone("26px"),
     "dune.view-header-lead": "14px",
 
     "// ——— Title bar ———": "",
