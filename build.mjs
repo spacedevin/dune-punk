@@ -46,6 +46,17 @@ const kbox = (border, fill, s = 6, tick = border) => {
   ].join(", ");
 };
 
+// Kvantum push button: 1px outline with only the bottom-right corner cut, plus Daemon's 3px red bar
+// riding the left edge (60% height, centred). Fill inset 1px so the outline stays a crisp line.
+const boxBR = (border, fill, s = 7) => {
+  const o = s + 0.4;
+  return [
+    `linear-gradient(315deg, transparent 0 ${s}px, ${fill} ${s}px) 1px 1px / calc(100% - 2px) calc(100% - 2px) no-repeat`,
+    `linear-gradient(315deg, transparent 0 ${o}px, ${border} ${o}px)`
+  ].join(", ");
+};
+const kbtn = (bar, border, fill) => `linear-gradient(${bar}, ${bar}) 0 50% / 3px 60% no-repeat, ${boxBR(border, fill)}`;
+
 // Daemon buttons are dark outlined cards: frame border, accent label (body text if the accent
 // can't hold 4.5:1 on the dark fill).
 const btnFg = (p) => (contrast(p.accent, p.button ?? p.widget) >= 4.5 ? p.accent : p.text);
@@ -223,8 +234,9 @@ function duneChrome(p) {
     "dune.titlebar-traffic-pad": K ? "80px" : "96px",
     "dune.titlebar-h": "36px",
     "dune.titlebar-radius": "0px",
+    // Aurorae band: top-left corner cut at 45°.
     "dune.surface-titleBar": K && onTitle
-      ? p.titleBg
+      ? `linear-gradient(135deg, transparent 0 12px, ${p.titleBg} 12px)`
       : K && !onTitle
       ? `linear-gradient(180deg, ${p.frame} 0 3px, transparent 3px), linear-gradient(0deg, ${p.frame} 0 1px, transparent 1px), ${p.titleBg}`
       : `linear-gradient(0deg, ${p.frame} 0 1px, transparent 1px), ${p.titleBg}`,
@@ -236,7 +248,7 @@ function duneChrome(p) {
     "dune.titlebar-ws-bg": onTitle ? "transparent" : K ? kbox(p.frame, p.button) : `${marker(p.frame)}, ${p.widget}`,
     "dune.titlebar-tools-bg": onTitle ? "transparent" : K ? kbox(p.frame, p.button) : `${marker(p.frame, 315)}, ${p.widget}`,
     "dune.titlebar-omnibar-bg": onTitle && K
-      ? `linear-gradient(${p.omnibarBg}, ${p.omnibarBg}) 0 50% / 100% 24px no-repeat`
+      ? `linear-gradient(135deg, transparent 0 6px, ${p.omnibarBg} 6px calc(100% - 6px), transparent calc(100% - 6px)) 0 50% / 100% 24px no-repeat`
       : onTitle
       ? `${marker(p.titleFg)}, ${marker(p.titleFg, 315)}, ${p.omnibarBg ?? p.hot}`
       : K ? kbox(p.frame, p.input) : `${marker(p.hot)}, ${marker(p.frame, 315)}, ${p.input}`,
@@ -319,6 +331,14 @@ function duneChrome(p) {
     // Active tab: slate-teal fill, a 2px neon top rule, bottom-right corner cut (Kvantum tab).
     "dune.tab-active-bg": `linear-gradient(180deg, ${p.tabTop ?? p.hot} 0 2px, transparent 2px), ${cutBR(p.tabActiveBg, 8)}`,
     "dune.tab-active-border": "transparent",
+    // Kit buttons / segmented controls / checkboxes (Kvantum widget set).
+    "dune.btn-bg": K ? kbtn(p.hot, a(p.frame2, "55"), p.button) : (p.button ?? p.widget),
+    "dune.btn-bg-hover": K ? kbtn(p.hot, p.frame2, mix(p.frame2, p.button ?? p.widget, 0.08)) : mix(p.text, p.button ?? p.widget, 0.12),
+    "dune.btn-border": "transparent",
+    "dune.btn-primary-bg": K ? kbtn(p.hot, p.frame2, p.accent) : p.accent,
+    "dune.btn-primary-bg-hover": K ? kbtn(p.hot, p.frame2, p.accentHover) : p.accentHover,
+    "dune.seg-active-bg": K ? cutBR(p.accent, 6) : p.accent,
+    "dune.check-radius": "0px",
     // Selected tree row: Daemon's 3px neon bar on the left of a slate-teal fill.
     "dune.tree-row-selected-bg": `${stripe(p.rowBar ?? p.hot)}, ${p.selection}`,
     // Square, thin, red idle → cyan on hover (Kvantum scrollbar).
