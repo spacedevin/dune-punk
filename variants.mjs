@@ -248,4 +248,43 @@ const samurai = {
   }
 };
 
-export const VARIANTS = [daemon, netrunner, arasaka, samurai];
+// Shared Daemon/Kvantum structure for every variant: the same title band, flat single surface,
+// slim dividers, buttons, tabs, status bar, transparency and motion — only the colours differ.
+// frame = band + outlines, frame2 = active outline/bar/tick, editor = the one surface.
+const punk = (v) => {
+  const sel = mix(v.frame, v.editor, 0.3);
+  return {
+    ...v,
+    kvantum: true,
+    titleIsBlock: true,
+    plainStatus: true,
+    seamlessStatus: true,
+    sidebar: v.editor,
+    panel: v.editor,
+    deep: v.editor,
+    button: v.button ?? v.input,
+    titleBg: v.frame,
+    titleFg: D.bg2,
+    titleFgMuted: D.bg2,
+    omnibarBg: mix(v.frame, "#FFFFFF", 0.88),
+    omnibarFg: D.bg2,
+    lights: [D.bg2, D.bg2, D.bg2],
+    segFg: v.text,
+    selection: sel,
+    accent: sel,
+    accentFg: v.textBright,
+    accentHover: mix(v.frame, v.editor, 0.22),
+    tabActiveBg: sel,
+    tabActiveFg: v.textBright,
+    tabInactiveBg: v.editor,
+    rowBar: v.frame2,
+    tabTop: v.frame2,
+    menuSel: v.frame2,
+    menuSelFg: D.bg2,
+    scroll: v.frame,
+    scrollHover: v.frame2,
+    activityAnim: false
+  };
+};
+
+export const VARIANTS = [daemon, punk(netrunner), punk(arasaka), punk(samurai)];
