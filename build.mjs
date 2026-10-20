@@ -121,7 +121,7 @@ function duneChrome(p) {
     "dune.surface-panel": p.panel,
     "dune.surface-activityBar": p.sidebar,
     // Mirror of the title band: bottom-right corner cut at 45° with a solid tick in the corner.
-    "dune.surface-statusBar": p.seamlessStatus ? `linear-gradient(315deg, ${p.frame} 0 5px, transparent 5px), linear-gradient(315deg, transparent 0 12px, ${p.sidebar} 12px)` : p.plainStatus ? `linear-gradient(180deg, ${p.error} 0 1px, transparent 1px), ${p.sidebar}` : p.sidebar,
+    "dune.surface-statusBar": p.seamlessStatus ? `linear-gradient(315deg, ${p.frame} 0 5px, transparent 5px), linear-gradient(180deg, ${p.frame} 0 1px, transparent 1px), linear-gradient(315deg, transparent 0 12px, ${p.sidebar} 12px)` : p.plainStatus ? `linear-gradient(180deg, ${p.error} 0 1px, transparent 1px), ${p.sidebar}` : p.sidebar,
     "dune.surface-widget": p.widget,
     "dune.surface-overlay": p.widget,
     "dune.surface-input": p.input,
@@ -211,9 +211,13 @@ function duneChrome(p) {
     // Daemon: ONE line between panes, never two. Kvantum drops per-pane outlines and lets a 1px gap
     // over a frame-colored canvas draw the single divider (and the outer window frame).
     "dune.part-border-width": K ? "0px" : "1px",
-    "dune.part-gap": K ? "6px" : "6px",
+    // Outer window margin stays 6px (transparent window edge / corners untouched); panes butt
+    // against the title band and status bar, and the pane grid shows a solid 1px red gutter.
+    "dune.canvas-pad": "6px",
+    "dune.part-gap": K ? "0px" : "6px",
     "dune.part-pad": K ? "0px" : "6px",
-    "dune.split-size": "6px",
+    "dune.split-size": K ? "1px" : "6px",
+    "dune.center-bg": K ? p.frame : "transparent",
     "dune.elev-1": `0 0 0 1px ${a(p.frame, "33")}`,
     "dune.elev-2": `0 0 0 1px ${a(p.frame, "77")}, 0 10px 28px ${a("#000000", "99")}`,
     "dune.elev-3": `0 0 0 1px ${p.frame}, 0 0 24px ${a(p.frame, "33")}, 0 20px 48px ${a("#000000", "AA")}`,
