@@ -1,0 +1,5 @@
+.dune/**
+.preview/**
+scripts/**
+*.mjs
+node_modules/**

@@ -1,0 +1,82 @@
+{
+  "name": "dune-punk",
+  "displayName": "Dune Punk",
+  "description": "Full-app cyberpunk theme collection for Dune, built on the Daemon 2.0 palette — chamfered neon frames, cut-corner segments, scanline canvas, HUD motion, and a matching hex-badge icon theme. Four variants: Daemon, Netrunner, Arasaka, Samurai.",
+  "version": "0.1.0",
+  "publisher": "dune",
+  "license": "MIT",
+  "icon": "icon.png",
+  "engines": {
+    "vscode": "^1.70.0"
+  },
+  "categories": [
+    "Themes"
+  ],
+  "keywords": [
+    "theme",
+    "cyberpunk",
+    "daemon",
+    "neon",
+    "icon-theme",
+    "dune"
+  ],
+  "scripts": {
+    "build": "node build.mjs",
+    "dev-install": "node build.mjs && sh scripts/dev-install.sh",
+    "package": "node build.mjs && npx @vscode/vsce package"
+  },
+  "contributes": {
+    "themes": [
+      {
+        "id": "Dune Punk Daemon",
+        "label": "Dune Punk Daemon",
+        "uiTheme": "vs-dark",
+        "path": "./themes/dune-punk-daemon-color-theme.json"
+      },
+      {
+        "id": "Dune Punk Netrunner",
+        "label": "Dune Punk Netrunner",
+        "uiTheme": "vs-dark",
+        "path": "./themes/dune-punk-netrunner-color-theme.json"
+      },
+      {
+        "id": "Dune Punk Arasaka",
+        "label": "Dune Punk Arasaka",
+        "uiTheme": "vs-dark",
+        "path": "./themes/dune-punk-arasaka-color-theme.json"
+      },
+      {
+        "id": "Dune Punk Samurai",
+        "label": "Dune Punk Samurai",
+        "uiTheme": "vs-dark",
+        "path": "./themes/dune-punk-samurai-color-theme.json"
+      }
+    ],
+    "iconThemes": [
+      {
+        "id": "dune-punk-icons",
+        "label": "Dune Punk Icons",
+        "path": "./icons/dune-punk-icon-theme.json"
+      },
+      {
+        "id": "dune-punk-circles",
+        "label": "Dune Punk Circles",
+        "path": "./icons/dune-punk-circles-icon-theme.json"
+      }
+    ],
+    "duneThemeCollections": [
+      {
+        "id": "dune.punk",
+        "label": "Dune Punk",
+        "order": 4,
+        "blurb": "Neon on burgundy night. Wake up, Samurai — the city needs a commit.",
+        "themes": [
+          "Dune Punk Daemon",
+          "Dune Punk Netrunner",
+          "Dune Punk Arasaka",
+          "Dune Punk Samurai"
+        ]
+      }
+    ]
+  }
+}

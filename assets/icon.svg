@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <path d="M40 0H256V216L216 256H0V40Z" fill="#210E15"/>
+  <path fill="#FF5048" fill-rule="evenodd" d="M40 0H256V216L216 256H0V40Z M44 10H246V212L212 246H10V44Z"/>
+  <path fill="#5DF4FE" fill-rule="evenodd" d="M70 62H160L196 98V158L160 194H70Z M98 88H148L168 108V148L148 168H98Z"/>
+  <path fill="#5DF4FE" d="M70 62H98V194H70Z"/>
+  <rect x="58" y="62" width="6" height="132" fill="#FDF500"/>
+  <rect x="196" y="40" width="22" height="22" fill="#FDF500"/>
+  <g fill="#FF5048">
+    <rect x="70" y="212" width="4" height="18"/><rect x="78" y="212" width="2" height="18"/>
+    <rect x="84" y="212" width="6" height="18"/><rect x="94" y="212" width="2" height="18"/>
+    <rect x="100" y="212" width="3" height="18"/><rect x="108" y="212" width="6" height="18"/>
+    <rect x="118" y="212" width="2" height="18"/><rect x="124" y="212" width="4" height="18"/>
+    <rect x="132" y="212" width="2" height="18"/><rect x="138" y="212" width="8" height="18"/>
+  </g>
+  <rect x="24" y="24" width="14" height="4" fill="#5DF4FE"/>
+</svg>
