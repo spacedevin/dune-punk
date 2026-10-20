@@ -214,7 +214,8 @@ function duneChrome(p) {
 
     "// ——— Title bar ———": "",
     "dune.titleBar.controlsPadX": K ? "14" : "26",
-    "dune.titleBar.controlsPadY": K ? "11" : "17",
+    // Measured: band spans y 6–42 (6px canvas gap + 36px bar) → centre 24; 14px disc → top 17.
+    "dune.titleBar.controlsPadY": K ? "17" : "17",
     "dune.titleBar.controlsColorClose": p.lights[0],
     "dune.titleBar.controlsColorMinimize": p.lights[1],
     "dune.titleBar.controlsColorZoom": p.lights[2],
@@ -235,7 +236,7 @@ function duneChrome(p) {
     "dune.titlebar-ws-bg": onTitle ? "transparent" : K ? kbox(p.frame, p.button) : `${marker(p.frame)}, ${p.widget}`,
     "dune.titlebar-tools-bg": onTitle ? "transparent" : K ? kbox(p.frame, p.button) : `${marker(p.frame, 315)}, ${p.widget}`,
     "dune.titlebar-omnibar-bg": onTitle && K
-      ? p.omnibarBg
+      ? `linear-gradient(${p.omnibarBg}, ${p.omnibarBg}) 0 50% / 100% 24px no-repeat`
       : onTitle
       ? `${marker(p.titleFg)}, ${marker(p.titleFg, 315)}, ${p.omnibarBg ?? p.hot}`
       : K ? kbox(p.frame, p.input) : `${marker(p.hot)}, ${marker(p.frame, 315)}, ${p.input}`,
