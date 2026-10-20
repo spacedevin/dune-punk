@@ -277,12 +277,17 @@ const punk = (v) => {
     tabActiveBg: sel,
     tabActiveFg: v.textBright,
     tabInactiveBg: v.editor,
-    rowBar: v.frame2,
-    tabTop: v.frame2,
-    menuSel: v.frame2,
+    // Selection/active outlines, bars and ticks use the frame hue (as Daemon does with its
+    // selection family), not the secondary accent.
+    frame2: v.frame,
+    focus: v.frame,
+    link: v.frame,
+    rowBar: v.frame,
+    tabTop: v.frame,
+    menuSel: v.frame,
     menuSelFg: D.bg2,
     scroll: v.frame,
-    scrollHover: v.frame2,
+    scrollHover: v.textBright,
     activityAnim: false
   };
 };

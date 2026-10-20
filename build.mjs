@@ -63,6 +63,19 @@ const kbtn = (bar, border, fill, tick) => [
   `linear-gradient(315deg, transparent 0 7px, ${fill} 7px) 6px 1px / calc(100% - 7px) calc(100% - 2px) no-repeat`,
   `linear-gradient(315deg, transparent 0 7.4px, ${border} 7.4px) 5px 0 / calc(100% - 5px) 100% no-repeat`
 ].join(", ");
+// Kvantum checkbox: four corner brackets (5px arms, 1.5px), and an X for the checked state.
+const brackets = (c) => {
+  const g = `linear-gradient(${c}, ${c})`;
+  return [
+    `${g} left top / 5px 1.5px no-repeat`, `${g} left top / 1.5px 5px no-repeat`,
+    `${g} right top / 5px 1.5px no-repeat`, `${g} right top / 1.5px 5px no-repeat`,
+    `${g} left bottom / 5px 1.5px no-repeat`, `${g} left bottom / 1.5px 5px no-repeat`,
+    `${g} right bottom / 5px 1.5px no-repeat`, `${g} right bottom / 1.5px 5px no-repeat`
+  ].join(", ");
+};
+const xmark = (c) =>
+  `linear-gradient(45deg, transparent calc(50% - 1px), ${c} calc(50% - 1px) calc(50% + 1px), transparent calc(50% + 1px)) 3px 3px / calc(100% - 6px) calc(100% - 6px) no-repeat, ` +
+  `linear-gradient(-45deg, transparent calc(50% - 1px), ${c} calc(50% - 1px) calc(50% + 1px), transparent calc(50% + 1px)) 3px 3px / calc(100% - 6px) calc(100% - 6px) no-repeat`;
 // Kvantum tab: teal fill, cyan outline (open at the bottom), bottom-left cut, solid tick top-right.
 const ktab = (border, fill) => [
   `linear-gradient(225deg, ${border} 0 5px, transparent 5px)`,
@@ -285,8 +298,8 @@ function duneChrome(p) {
     "dune.activity-item-radius": "0px",
     "dune.activity-item-gap": "2px",
     "dune.activity-item-fg": p.text,
-    "dune.activity-item-hover-bg": K ? kbox(p.focus, a(p.text, "10"), 5) : `${stripe(p.hot)}, ${a(p.text, "14")}`,
-    "dune.activity-item-active-bg": K ? kbox(p.focus, a(p.accent, "CC"), 5) : `${stripe(p.accent)}, ${cutBR(a(p.accent, "30"), 8)}`,
+    "dune.activity-item-hover-bg": K ? kbox(p.frame2, mix(p.text, p.sidebar, 0.07), 5) : `${stripe(p.hot)}, ${a(p.text, "14")}`,
+    "dune.activity-item-active-bg": K ? kbox(p.frame2, p.accent, 5) : `${stripe(p.accent)}, ${cutBR(a(p.accent, "30"), 8)}`,
     "dune.activity-item-radius-top": "0px",
     "dune.activity-item-fg-top": p.textMuted,
     // Top-mode rail buttons (the default layout): the same Kvantum button as everywhere else.
@@ -360,6 +373,19 @@ function duneChrome(p) {
     "dune.btn-primary-bg-hover": K ? kbtn(p.frame2, p.frame2, mix(p.frame2, p.accent, 0.12), p.frame2) : p.accentHover,
     "dune.seg-active-bg": K ? cutBR(p.accent, 6) : p.accent,
     "dune.check-radius": "0px",
+    // Kvantum inputs: outline with bottom-right cut + solid tick top-left; cyan on focus.
+    "dune.field-bg": K ? `linear-gradient(135deg, ${p.frame} 0 5px, transparent 5px), ${boxBR(p.frame, p.input, 7)}` : p.input,
+    "dune.field-bg-focus": K ? `linear-gradient(135deg, ${p.frame2} 0 5px, transparent 5px), ${boxBR(p.frame2, p.input, 7)}` : p.input,
+    "dune.field-border": K ? "transparent" : p.frame,
+    "dune.field-border-focus": K ? "transparent" : p.focus ?? p.hot,
+    "dune.select-chevron": `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='${enc(p.frame2)}' stroke-width='2.5' stroke-linecap='square'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`,
+    // Checkboxes: Kvantum corner brackets [ ]; checked adds an X.
+    "dune.check-appearance": K ? "none" : "auto",
+    "dune.check-size": K ? "15px" : "auto",
+    "dune.check-bg": K ? brackets(p.frame2) : p.input,
+    "dune.check-on-bg": K ? `${xmark(p.frame2)}, ${brackets(p.frame2)}` : p.accent,
+    "dune.check-border": K ? "transparent" : p.frame,
+    "dune.check-on-border": K ? "transparent" : p.accent,
     // Chat composer: chamfered Kvantum card, neon focus glow.
     "dune.composer-bg": K ? kbox(p.frame, p.input, 8, p.frame) : p.input,
     "dune.composer-border": K ? "transparent" : p.frame,
@@ -399,8 +425,8 @@ function duneChrome(p) {
     "dune.settings-nav-seg-2": navSeg(1),
     "dune.settings-nav-seg-3": navSeg(2),
     "dune.settings-nav-seg-4": navSeg(3),
-    "dune.settings-nav-hover-bg": K ? kbox(p.focus, a(p.text, "10"), 5) : `${stripe(p.hot)}, ${a(p.text, "12")}`,
-    "dune.settings-nav-active-bg": K ? kbox(p.focus, a(p.accent, "CC"), 5) : cut(p.accent, 6),
+    "dune.settings-nav-hover-bg": K ? kbox(p.frame2, mix(p.text, p.sidebar, 0.07), 5) : `${stripe(p.hot)}, ${a(p.text, "12")}`,
+    "dune.settings-nav-active-bg": K ? kbox(p.frame2, p.accent, 5) : cut(p.accent, 6),
     "dune.settings-nav-active-fg": p.accentFg,
     "dune.settings-scope-active-bg": p.accent,
     "dune.settings-scope-active-fg": p.accentFg,
