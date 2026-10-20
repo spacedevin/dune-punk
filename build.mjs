@@ -1010,6 +1010,8 @@ for (const p of VARIANTS) {
     "$schema": "https://raw.githubusercontent.com/duneyou/dune-ide-new/main/apps/tauri-ide/schemas/dune-theme.schema.json",
     name: p.name,
     type: "dark",
+    // Daemon: transparent window (square edges, desktop around the frame), same opt-in as LCARS.
+    ...(p.kvantum ? { duneWindowTransparent: true } : {}),
     semanticHighlighting: true,
     colors: c,
     tokenColors: tokenColors(p),

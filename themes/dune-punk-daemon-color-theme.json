@@ -2,6 +2,7 @@
   "$schema": "https://raw.githubusercontent.com/duneyou/dune-ide-new/main/apps/tauri-ide/schemas/dune-theme.schema.json",
   "name": "Dune Punk Daemon",
   "type": "dark",
+  "duneWindowTransparent": true,
   "semanticHighlighting": true,
   "colors": {
     "// ——— Base ———": "",
