@@ -96,7 +96,7 @@ function duneChrome(p) {
     "dune.surface-sidebar": p.sidebar,
     "dune.surface-panel": p.panel,
     "dune.surface-activityBar": p.sidebar,
-    "dune.surface-statusBar": p.plainStatus ? `linear-gradient(180deg, ${p.error} 0 1px, transparent 1px), ${p.sidebar}` : p.sidebar,
+    "dune.surface-statusBar": p.seamlessStatus ? p.sidebar : p.plainStatus ? `linear-gradient(180deg, ${p.error} 0 1px, transparent 1px), ${p.sidebar}` : p.sidebar,
     "dune.surface-widget": p.widget,
     "dune.surface-overlay": p.widget,
     "dune.surface-input": p.input,
@@ -132,7 +132,7 @@ function duneChrome(p) {
     "dune.state-modified": p.data,
     "dune.state-deleted": D.red2,
     "dune.state-conflict": D.orange,
-    "dune.window-bg": p.deep,
+    "dune.window-bg": K ? p.editor : p.deep,
     "dune.window-border": p.frame,
     "dune.palette-kbd-bg-top": p.raised,
     "dune.palette-kbd-bg-bottom": p.widget,
@@ -155,7 +155,7 @@ function duneChrome(p) {
     "dune.overlay-scrim": a(p.deep, "B3"),
     "dune.shadow-window": `0 0 0 1px ${p.frame}, 0 0 14px ${a(p.frame, "8C")}, 0 0 32px ${a(p.frame, "33")}, 0 12px 32px ${a("#000000", "99")}`,
     "dune.zone-drop-glow": a(p.hot, "2E"),
-    "dune.app-canvas": K ? p.frame : p.deep,
+    "dune.app-canvas": K ? p.editor : p.deep,
     "dune.app-canvas-2": mix(p.frame, p.deep, 0.14),
     "dune.app-canvas-image": K ? "none" : canvasImage(p),
     "dune.welcome-glow": mix(p.frame, p.deep, 0.35),
@@ -185,9 +185,9 @@ function duneChrome(p) {
     // Daemon: ONE line between panes, never two. Kvantum drops per-pane outlines and lets a 1px gap
     // over a frame-colored canvas draw the single divider (and the outer window frame).
     "dune.part-border-width": K ? "0px" : "1px",
-    "dune.part-gap": K ? "1px" : "6px",
+    "dune.part-gap": K ? "0px" : "6px",
     "dune.part-pad": K ? "0px" : "6px",
-    "dune.split-size": K ? "1px" : "6px",
+    "dune.split-size": K ? "4px" : "6px",
     "dune.elev-1": `0 0 0 1px ${a(p.frame, "33")}`,
     "dune.elev-2": `0 0 0 1px ${a(p.frame, "77")}, 0 10px 28px ${a("#000000", "99")}`,
     "dune.elev-3": `0 0 0 1px ${p.frame}, 0 0 24px ${a(p.frame, "33")}, 0 20px 48px ${a("#000000", "AA")}`,
@@ -212,13 +212,13 @@ function duneChrome(p) {
     "dune.view-header-lead": "14px",
 
     "// ——— Title bar ———": "",
-    "dune.titleBar.controlsPadX": "26",
-    "dune.titleBar.controlsPadY": "17",
+    "dune.titleBar.controlsPadX": K ? "14" : "26",
+    "dune.titleBar.controlsPadY": K ? "11" : "17",
     "dune.titleBar.controlsColorClose": p.lights[0],
     "dune.titleBar.controlsColorMinimize": p.lights[1],
     "dune.titleBar.controlsColorZoom": p.lights[2],
     "dune.titleBar.controlsDiameter": K ? "14" : "12",
-    "dune.titlebar-traffic-pad": "96px",
+    "dune.titlebar-traffic-pad": K ? "80px" : "96px",
     "dune.titlebar-h": "36px",
     "dune.titlebar-radius": "0px",
     "dune.surface-titleBar": K && !onTitle
@@ -232,7 +232,7 @@ function duneChrome(p) {
     "dune.titlebar-ws-bg": onTitle ? "transparent" : K ? kbox(p.frame, p.button) : `${marker(p.frame)}, ${p.widget}`,
     "dune.titlebar-tools-bg": onTitle ? "transparent" : K ? kbox(p.frame, p.button) : `${marker(p.frame, 315)}, ${p.widget}`,
     "dune.titlebar-omnibar-bg": onTitle && K
-      ? kbox(p.titleFg, p.omnibarBg, 6)
+      ? p.omnibarBg
       : onTitle
       ? `${marker(p.titleFg)}, ${marker(p.titleFg, 315)}, ${p.omnibarBg ?? p.hot}`
       : K ? kbox(p.frame, p.input) : `${marker(p.hot)}, ${marker(p.frame, 315)}, ${p.input}`,

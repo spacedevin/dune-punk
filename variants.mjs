@@ -13,7 +13,7 @@ const daemon = {
   panel: D.bg1,
   widget: D.night,
   button: D.button,
-  deep: D.bg2,
+  deep: D.bg1,
   raised: D.bg0,
   input: D.surface0,
   frame: D.red2,
@@ -23,6 +23,8 @@ const daemon = {
   textBright: mix(D.blue0, "#FFFFFF", 0.55),
   textMuted: mix(D.blue0, D.bg1, 0.62),
   textFaint: mix(D.blue0, D.bg1, 0.4),
+  // Accent = ink: pressed/active controls read as dark squares with cyan glyphs, which works both on
+  // the burgundy panes and on the salmon title band (Aurorae's square glyphs).
   accent: D.teal,
   accentFg: D.blue0,
   accentHover: mix(D.teal, D.bg0, 0.8),
@@ -53,6 +55,7 @@ const daemon = {
   seg: [D.teal, D.teal, D.teal, D.teal],
   segFg: D.blue0,
   plainStatus: true,
+  seamlessStatus: true,
   error: D.red1,
   warning: D.yellow0,
   success: D.green0,
