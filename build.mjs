@@ -353,6 +353,19 @@ function duneChrome(p) {
     "dune.btn-primary-bg-hover": K ? kbtn(p.frame2, p.frame2, mix(p.frame2, p.accent, 0.12), p.frame2) : p.accentHover,
     "dune.seg-active-bg": K ? cutBR(p.accent, 6) : p.accent,
     "dune.check-radius": "0px",
+    // Chat composer: chamfered Kvantum card, neon focus glow.
+    "dune.composer-bg": K ? kbox(p.frame, p.input, 8, p.frame) : p.input,
+    "dune.composer-border": K ? "transparent" : p.frame,
+    "dune.composer-focus-shadow": K ? `0 0 12px ${a(p.frame2, "55")}` : "none",
+    "dune.panel-tab-active-bg": K ? ktab(p.frame2, p.accent) : a(p.text, "14"),
+    "dune.panel-tab-active-border": K ? "transparent" : p.frame,
+    // ——— Motion (all reduced-motion guarded by the app) ———
+    // Buttons glitch (RGB split) once on hover; a newly selected row flickers like a neon tube;
+    // a faint light band sweeps the title band every 9s.
+    "dune.btn-hover-anim": K ? "dune-glitch 0.32s steps(3, end) 1" : "none",
+    "dune.row-selected-anim": K ? "dune-flicker 0.7s linear 1" : "none",
+    "dune.titlebar-scan": K ? `linear-gradient(90deg, transparent, ${a("#FFFFFF", "2E")}, transparent) 0 0 / 22% 100% no-repeat` : "none",
+    "dune.titlebar-anim": K ? "dune-scan 9s linear infinite" : "none",
     // Selected tree row: Daemon's 3px neon bar on the left of a slate-teal fill.
     "dune.tree-row-selected-bg": `${stripe(p.rowBar ?? p.hot)}, ${p.selection}`,
     // Square, thin, red idle → cyan on hover (Kvantum scrollbar).
