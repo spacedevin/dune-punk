@@ -214,7 +214,7 @@ function duneChrome(p) {
     "dune.titleBar.controlsColorClose": p.lights[0],
     "dune.titleBar.controlsColorMinimize": p.lights[1],
     "dune.titleBar.controlsColorZoom": p.lights[2],
-    "dune.titleBar.controlsDiameter": "12",
+    "dune.titleBar.controlsDiameter": K ? "14" : "12",
     "dune.titlebar-traffic-pad": "96px",
     "dune.titlebar-h": "36px",
     "dune.titlebar-radius": "0px",
@@ -229,7 +229,7 @@ function duneChrome(p) {
     "dune.titlebar-ws-bg": onTitle ? "transparent" : K ? kbox(p.frame, p.button) : `${marker(p.frame)}, ${p.widget}`,
     "dune.titlebar-tools-bg": onTitle ? "transparent" : K ? kbox(p.frame, p.button) : `${marker(p.frame, 315)}, ${p.widget}`,
     "dune.titlebar-omnibar-bg": onTitle && K
-      ? kbox(p.titleFg, a(p.titleFg, "14"), 6)
+      ? kbox(p.titleFg, p.omnibarBg, 6)
       : onTitle
       ? `${marker(p.titleFg)}, ${marker(p.titleFg, 315)}, ${p.omnibarBg ?? p.hot}`
       : K ? kbox(p.frame, p.input) : `${marker(p.hot)}, ${marker(p.frame, 315)}, ${p.input}`,

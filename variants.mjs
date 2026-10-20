@@ -48,7 +48,7 @@ const daemon = {
   titleFg: D.ink,
   titleFgMuted: D.ink,
   titleIsBlock: true,
-  omnibarBg: D.red2,
+  omnibarBg: mix(D.red2, D.ink, 0.86),
   omnibarFg: D.ink,
   seg: [D.teal, D.teal, D.teal, D.teal],
   segFg: D.blue0,
