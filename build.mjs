@@ -55,7 +55,20 @@ const boxBR = (border, fill, s = 7) => {
     `linear-gradient(315deg, transparent 0 ${o}px, ${border} ${o}px)`
   ].join(", ");
 };
-const kbtn = (bar, border, fill) => `linear-gradient(${bar}, ${bar}) 0 50% / 3px 60% no-repeat, ${boxBR(border, fill)}`;
+// Kvantum push button, as in the Daemon widget gallery: a detached full-height bar on the left (3px,
+// 2px gap), then ONE-colour 1px outline with the bottom-right corner cut; optional solid corner tick.
+const kbtn = (bar, border, fill, tick) => [
+  ...(tick ? [`linear-gradient(315deg, ${tick} 0 4px, transparent 4px)`] : []),
+  `linear-gradient(${bar}, ${bar}) 0 0 / 3px 100% no-repeat`,
+  `linear-gradient(315deg, transparent 0 7px, ${fill} 7px) 6px 1px / calc(100% - 7px) calc(100% - 2px) no-repeat`,
+  `linear-gradient(315deg, transparent 0 7.4px, ${border} 7.4px) 5px 0 / calc(100% - 5px) 100% no-repeat`
+].join(", ");
+// Kvantum tab: teal fill, cyan outline (open at the bottom), bottom-left cut, solid tick top-right.
+const ktab = (border, fill) => [
+  `linear-gradient(225deg, ${border} 0 5px, transparent 5px)`,
+  `linear-gradient(45deg, transparent 0 7px, ${fill} 7px) 1px 1px / calc(100% - 2px) calc(100% - 1px) no-repeat`,
+  `linear-gradient(45deg, transparent 0 7.4px, ${border} 7.4px)`
+].join(", ");
 
 // Daemon buttons are dark outlined cards: frame border, accent label (body text if the accent
 // can't hold 4.5:1 on the dark fill).
@@ -107,7 +120,8 @@ function duneChrome(p) {
     "dune.surface-sidebar": p.sidebar,
     "dune.surface-panel": p.panel,
     "dune.surface-activityBar": p.sidebar,
-    "dune.surface-statusBar": p.seamlessStatus ? p.sidebar : p.plainStatus ? `linear-gradient(180deg, ${p.error} 0 1px, transparent 1px), ${p.sidebar}` : p.sidebar,
+    // Mirror of the title band: bottom-right corner cut at 45° with a solid tick in the corner.
+    "dune.surface-statusBar": p.seamlessStatus ? `linear-gradient(315deg, ${p.frame} 0 5px, transparent 5px), linear-gradient(315deg, transparent 0 12px, ${p.sidebar} 12px)` : p.plainStatus ? `linear-gradient(180deg, ${p.error} 0 1px, transparent 1px), ${p.sidebar}` : p.sidebar,
     "dune.surface-widget": p.widget,
     "dune.surface-overlay": p.widget,
     "dune.surface-input": p.input,
@@ -236,7 +250,7 @@ function duneChrome(p) {
     "dune.titlebar-radius": "0px",
     // Aurorae band: top-left corner cut at 45°.
     "dune.surface-titleBar": K && onTitle
-      ? `linear-gradient(135deg, transparent 0 12px, ${p.titleBg} 12px)`
+      ? `linear-gradient(135deg, ${p.titleBg} 0 5px, transparent 5px), linear-gradient(135deg, transparent 0 12px, ${p.titleBg} 12px)`
       : K && !onTitle
       ? `linear-gradient(180deg, ${p.frame} 0 3px, transparent 3px), linear-gradient(0deg, ${p.frame} 0 1px, transparent 1px), ${p.titleBg}`
       : `linear-gradient(0deg, ${p.frame} 0 1px, transparent 1px), ${p.titleBg}`,
@@ -329,20 +343,29 @@ function duneChrome(p) {
     "dune.tab-strip-border-width": "1px",
     "dune.tab-pad-x": "10px",
     // Active tab: slate-teal fill, a 2px neon top rule, bottom-right corner cut (Kvantum tab).
-    "dune.tab-active-bg": `linear-gradient(180deg, ${p.tabTop ?? p.hot} 0 2px, transparent 2px), ${cutBR(p.tabActiveBg, 8)}`,
+    "dune.tab-active-bg": K ? ktab(p.frame2, p.tabActiveBg) : `linear-gradient(180deg, ${p.tabTop ?? p.hot} 0 2px, transparent 2px), ${cutBR(p.tabActiveBg, 8)}`,
     "dune.tab-active-border": "transparent",
     // Kit buttons / segmented controls / checkboxes (Kvantum widget set).
-    "dune.btn-bg": K ? kbtn(p.hot, a(p.frame2, "55"), p.button) : (p.button ?? p.widget),
-    "dune.btn-bg-hover": K ? kbtn(p.hot, p.frame2, mix(p.frame2, p.button ?? p.widget, 0.08)) : mix(p.text, p.button ?? p.widget, 0.12),
+    "dune.btn-bg": K ? kbtn(p.frame, p.frame, p.button) : (p.button ?? p.widget),
+    "dune.btn-bg-hover": K ? kbtn(p.frame2, p.frame2, p.button) : mix(p.text, p.button ?? p.widget, 0.12),
     "dune.btn-border": "transparent",
-    "dune.btn-primary-bg": K ? kbtn(p.hot, p.frame2, p.accent) : p.accent,
-    "dune.btn-primary-bg-hover": K ? kbtn(p.hot, p.frame2, p.accentHover) : p.accentHover,
+    "dune.btn-primary-bg": K ? kbtn(p.frame2, p.frame2, p.accent, p.frame2) : p.accent,
+    "dune.btn-primary-bg-hover": K ? kbtn(p.frame2, p.frame2, mix(p.frame2, p.accent, 0.12), p.frame2) : p.accentHover,
     "dune.seg-active-bg": K ? cutBR(p.accent, 6) : p.accent,
     "dune.check-radius": "0px",
     // Selected tree row: Daemon's 3px neon bar on the left of a slate-teal fill.
     "dune.tree-row-selected-bg": `${stripe(p.rowBar ?? p.hot)}, ${p.selection}`,
     // Square, thin, red idle → cyan on hover (Kvantum scrollbar).
-    "dune.scrollbar-size": "6px",
+    "dune.scrollbar-size": "8px",
+    "dune.scrollbar-radius": "0px",
+    // WebKit draws plain-element scrollbars natively (it ignores ::-webkit-scrollbar here), so tint them;
+    // Monaco scrollables get the square thumb + track via scrollbar-radius/-track.
+    "dune.scrollbar-width": "thin",
+    "dune.scrollbar-color": `${p.scroll ?? p.frame} ${K ? p.input : "transparent"}`,
+    "dune.statusbar-lang-bg": p.plainStatus ? "transparent" : p.accent,
+    "dune.statusbar-lang-fg": p.plainStatus ? p.text : p.accentFg,
+    "dune.statusbar-lang-bg-hover": p.accent,
+    "dune.scrollbar-track": K ? p.input : "transparent",
     "dune.scrollbar-thumb": p.scroll ?? p.frame,
     "dune.scrollbar-thumb-hover": p.scrollHover ?? p.focus ?? p.hot,
 
@@ -554,14 +577,14 @@ function colors(p) {
     "statusBar.noFolderForeground": p.text,
     "statusBar.debuggingBackground": p.frame,
     "statusBar.debuggingForeground": p.segFg,
-    "statusBarItem.hoverBackground": p.textBright,
-    "statusBarItem.hoverForeground": p.segFg,
-    "statusBarItem.activeBackground": a(p.textBright, "CC"),
-    "statusBarItem.remoteBackground": p.seg[2],
-    "statusBarItem.remoteForeground": p.segFg,
-    "statusBarItem.prominentBackground": p.seg[0],
-    "statusBarItem.prominentForeground": p.segFg,
-    "statusBarItem.prominentHoverBackground": p.textBright,
+    "statusBarItem.hoverBackground": p.plainStatus ? p.accent : p.textBright,
+    "statusBarItem.hoverForeground": p.plainStatus ? p.accentFg : p.segFg,
+    "statusBarItem.activeBackground": p.plainStatus ? p.accentHover : a(p.textBright, "CC"),
+    "statusBarItem.remoteBackground": p.plainStatus ? T : p.seg[2],
+    "statusBarItem.remoteForeground": p.plainStatus ? p.text : p.segFg,
+    "statusBarItem.prominentBackground": p.plainStatus ? T : p.seg[0],
+    "statusBarItem.prominentForeground": p.plainStatus ? p.text : p.segFg,
+    "statusBarItem.prominentHoverBackground": p.plainStatus ? p.accent : p.textBright,
     "statusBarItem.errorBackground": D.red1,
     "statusBarItem.errorForeground": D.bg2,
     "statusBarItem.warningBackground": D.yellow0,
