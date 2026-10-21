@@ -738,6 +738,7 @@
     "dune.seg-active-bg": "linear-gradient(315deg, transparent 0 6px, #591A2B 6px)",
     "dune.check-radius": "0px",
     "dune.kit-controls": "on",
+    "dune.overlay-card-bg": "linear-gradient(135deg, #FB3048 0 3px, transparent 3px), linear-gradient(315deg, #FB3048 0 3px, transparent 3px), linear-gradient(135deg, transparent 0 10px, #040A10 10px calc(100% - 10px), transparent calc(100% - 10px)) 1px 1px / calc(100% - 2px) calc(100% - 2px) no-repeat, linear-gradient(135deg, transparent 0 10.4px, #FB3048 10.4px calc(100% - 10.4px), transparent calc(100% - 10.4px))",
     "dune.field-bg": "linear-gradient(135deg, #FB3048 0 5px, transparent 5px), linear-gradient(315deg, transparent 0 7px, #040A10 7px) 1px 1px / calc(100% - 2px) calc(100% - 2px) no-repeat, linear-gradient(315deg, transparent 0 7.4px, #FB3048 7.4px)",
     "dune.field-bg-focus": "linear-gradient(135deg, #FB3048 0 5px, transparent 5px), linear-gradient(315deg, transparent 0 7px, #040A10 7px) 1px 1px / calc(100% - 2px) calc(100% - 2px) no-repeat, linear-gradient(315deg, transparent 0 7.4px, #FB3048 7.4px)",
     "dune.field-border": "transparent",

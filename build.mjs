@@ -375,6 +375,8 @@ function duneChrome(p) {
     "dune.check-radius": "0px",
     // Opt every hand-rolled field / button / tab / chip into the same control kit.
     "dune.kit-controls": K ? "on" : "off",
+    // Menus / pickers / popovers / palette / sheets: chamfered Kvantum card.
+    "dune.overlay-card-bg": K ? kbox(p.frame, p.widget, 10, p.frame) : p.widget,
     // Kvantum inputs: outline with bottom-right cut + solid tick top-left; cyan on focus.
     "dune.field-bg": K ? `linear-gradient(135deg, ${p.frame} 0 5px, transparent 5px), ${boxBR(p.frame, p.input, 7)}` : p.input,
     "dune.field-bg-focus": K ? `linear-gradient(135deg, ${p.frame2} 0 5px, transparent 5px), ${boxBR(p.frame2, p.input, 7)}` : p.input,
