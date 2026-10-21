@@ -22,6 +22,12 @@ permissions:
   contents: read
   id-token: write
 
+# Promoting a release fires both `released` and `edited`; queue runs per tag so the second one sees
+# the version as live instead of racing the first to Open VSX.
+concurrency:
+  group: openvsx-${{ github.event.release.tag_name || inputs.tag }}
+  cancel-in-progress: false
+
 jobs:
   publish:
     # Only full releases. Skip while still a prerelease/draft.
@@ -72,8 +78,10 @@ jobs:
           OVSX_PAT: ${{ secrets.OVSX_PAT }}
         run: |
           set -euo pipefail
-          if [ -n "$OVSX_PAT" ]; then
-            npx -y ovsx publish dist/*.vsix -p "$OVSX_PAT"
-          else
-            npx -y ovsx publish dist/*.vsix --trusted-publishing
+          if [ -n "$OVSX_PAT" ]; then AUTH=(-p "$OVSX_PAT"); else AUTH=(--trusted-publishing); fi
+          if ! npx -y ovsx publish dist/*.vsix "${AUTH[@]}" 2>&1 | tee publish.log; then
+            # Open VSX reports a version that exists but is still inactive (e.g. an unverified
+            # namespace) as an error; the version IS published, so don't fail the release.
+            grep -q "is already published" publish.log && { echo "::notice::already published"; exit 0; }
+            exit 1
           fi
