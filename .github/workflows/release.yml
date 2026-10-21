@@ -1,0 +1,163 @@
+# Build Dune Punk and, on push to main, publish a PRERELEASE (with the .vsix attached).
+# Promote it (Edit release → uncheck "Set as a pre-release") to trigger publish.yml, which
+# publishes that exact .vsix to Open VSX. Mirrors the knoeone release pattern (popcraft-desktop,
+# dune-ide).
+#
+#   version ── package (every run) ── release (main push only) → prerelease + release/vX.Y.Z
+
+name: Build
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# PRs: one run per PR, superseded pushes cancelled. main: one run per commit, never cancelled —
+# a cancelled main run would leave a half-uploaded prerelease behind.
+concurrency:
+  group: build-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  version:
+    name: Compute version
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      version: ${{ steps.set.outputs.version }}
+      published: ${{ steps.set.outputs.published }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      # Conventional Commits drive the bump (feat/fix/perf/BREAKING release; chore/docs/ci don't).
+      - name: Next version (sem dry-run, main push only)
+        id: semantic
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: tishlang/sem@v1
+        with:
+          dry_run: true
+          config: |
+            branches: [main]
+            plugins:
+              - "@sem/commit-analyzer"
+              - "@sem/release-notes-generator"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Resolve version + whether to publish
+        id: set
+        run: |
+          set -euo pipefail
+          VER="${{ steps.semantic.outputs.new_release_version }}"
+          FALLBACK=$(node -p "require('./package.json').version")
+          if [ -n "$VER" ]; then
+            echo "Using sem version: $VER"
+            echo "published=true" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VER="$FALLBACK"
+            echo "Manual dispatch — using committed version: $VER"
+            echo "published=true" >> "$GITHUB_OUTPUT"
+          else
+            VER="$FALLBACK"
+            echo "::notice::No version bump (no feat/fix/perf/BREAKING) — skipping the prerelease."
+            echo "published=false" >> "$GITHUB_OUTPUT"
+          fi
+          echo "version=$VER" >> "$GITHUB_OUTPUT"
+
+  package:
+    name: Package .vsix
+    needs: version
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+
+      # Theme JSONs are generated from palette.mjs / variants.mjs; the Dune key list is optional at
+      # build time (validation skips the key-name check when it is absent).
+      - name: Generated themes are committed
+        run: |
+          node build.mjs
+          git diff --exit-code -- themes icons
+
+      # The version the extension reports has to be the version being released — stamped here,
+      # never committed, so it cannot drift from the tag.
+      - name: Stamp the release version
+        run: npm version "${{ needs.version.outputs.version }}" --no-git-tag-version --allow-same-version
+
+      - run: npx -y @vscode/vsce package --no-dependencies
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: vsix
+          path: "*.vsix"
+          if-no-files-found: error
+
+  release:
+    name: Prerelease
+    needs: [version, package]
+    # Publish only from main. PR builds still run; nothing is released.
+    if: >-
+      ${{ always()
+          && github.event_name == 'push'
+          && github.ref == 'refs/heads/main'
+          && needs.version.outputs.published == 'true'
+          && needs.package.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: vsix
+          path: assets
+
+      - name: Generate prerelease notes (since last tag)
+        run: |
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          if [ -n "$LAST_TAG" ]; then
+            LOG=$(git log "$LAST_TAG..HEAD" --pretty=format:"- %s (%h)" --no-merges 2>/dev/null || echo "")
+          else
+            LOG=$(git log -30 --pretty=format:"- %s (%h)" --no-merges 2>/dev/null || echo "")
+          fi
+          [ -z "$LOG" ] && LOG="- No commits to list"
+          { echo "## Changes"; echo ""; echo "$LOG"; } > release-body.md
+
+      - name: Create or update release branch
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          BRANCH="release/v${{ needs.version.outputs.version }}"
+          git checkout -B "$BRANCH"
+          git push origin "$BRANCH" --force
+
+      - name: Create or update the GitHub prerelease
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ needs.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          TAG="v${VERSION}"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release edit "$TAG" --notes-file release-body.md --prerelease
+          else
+            gh release create "$TAG" --target "release/v${VERSION}" --title "$TAG" \
+              --notes-file release-body.md --prerelease
+          fi
+          gh release upload "$TAG" assets/*.vsix --clobber

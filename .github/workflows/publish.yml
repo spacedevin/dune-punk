@@ -1,54 +1,79 @@
-name: Build & Publish
+# When a prerelease is promoted to a full release (Edit release → uncheck "Set as a pre-release"),
+# publish its .vsix to Open VSX. Prereleases never leave GitHub. Re-running on an `edited` event is
+# safe: a version that is already live on Open VSX is skipped.
+#
+# Open VSX auth: the OVSX_PAT secret while it exists; once THIS workflow (publish.yml) is registered
+# as the spacedevin namespace's trusted publisher on open-vsx.org, delete the secret and releases
+# authenticate with a short-lived GitHub OIDC token.
+
+name: Publish to Open VSX
+
 on:
-  push:
-    branches: ["**"]
-    tags: ["v*"]
-  pull_request:
+  release:
+    types: [released, edited]
   workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to (re)publish, e.g. v0.2.0"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
-  package:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      # Theme JSONs are generated from palette.mjs / variants.mjs; the Dune key list is optional at
-      # build time (validation skips the key-name check when it is absent).
-      - run: node build.mjs
-      - name: Generated themes are committed
-        run: git diff --exit-code -- themes icons
-      - run: npx -y @vscode/vsce package --no-dependencies
-      - uses: actions/upload-artifact@v4
-        with:
-          name: vsix
-          path: "*.vsix"
   publish:
-    needs: package
-    permissions:
-      contents: read
-      id-token: write
-    if: startsWith(github.ref, 'refs/tags/v')
+    # Only full releases. Skip while still a prerelease/draft.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.release.prerelease == false && github.event.release.draft == false)
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
         with:
-          name: vsix
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      # First release: an OVSX_PAT secret claims the namespace and publishes (Open VSX only accepts a
-      # trusted publisher for an extension that already has a version). After that, register this
-      # workflow as the trusted publisher on open-vsx.org and delete the secret — releases then
-      # authenticate with a short-lived GitHub OIDC token.
-      - name: Publish to Open VSX
+          node-version: "24"
+
+      - name: Resolve tag/version
+        id: ver
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then TAG="${{ inputs.tag }}"; else TAG="${{ github.event.release.tag_name }}"; fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "version=${TAG#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Already on Open VSX?
+        id: live
+        env:
+          VERSION: ${{ steps.ver.outputs.version }}
+        run: |
+          set -euo pipefail
+          ID=$(node -p "const p=require('./package.json'); p.publisher + '/' + p.name")
+          CODE=$(curl -s -o /dev/null -w "%{http_code}" "https://open-vsx.org/api/$ID/$VERSION")
+          if [ "$CODE" = "200" ]; then
+            echo "::notice::$ID $VERSION is already published — nothing to do."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Download the release .vsix
+        if: steps.live.outputs.skip != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release download "${{ steps.ver.outputs.tag }}" --pattern "*.vsix" --dir dist
+
+      - name: Publish
+        if: steps.live.outputs.skip != 'true'
         env:
           OVSX_PAT: ${{ secrets.OVSX_PAT }}
         run: |
+          set -euo pipefail
           if [ -n "$OVSX_PAT" ]; then
-            npx -y ovsx create-namespace "$(node -p "require('./package.json').publisher")" -p "$OVSX_PAT" || true
-            npx -y ovsx publish *.vsix -p "$OVSX_PAT"
+            npx -y ovsx publish dist/*.vsix -p "$OVSX_PAT"
           else
-            npx -y ovsx publish *.vsix --trusted-publishing
+            npx -y ovsx publish dist/*.vsix --trusted-publishing
           fi

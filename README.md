@@ -58,38 +58,19 @@ The Dune-only parts live in `dune.*` color keys and top-level theme fields that 
 
 ## Publishing
 
-Tag a release (`git tag v0.1.1 && git push --tags`); the **Publish** workflow builds, packages and
-publishes to Open VSX with the `OVSX_PAT` repository secret. Locally: `OVSX_PAT=… npm run publish:ovsx`.
+Releases follow the knoeone pattern:
 
-For local development:
+1. **Push to `main`** → [tishlang/sem](https://github.com/tishlang/sem) reads the
+   [conventional commits](https://www.conventionalcommits.org) since the last tag (`feat` → minor,
+   `fix` / `perf` → patch, `!` / `BREAKING CHANGE` → major; `chore` / `docs` / `ci` don't release). CI stamps
+   that version, packages the `.vsix`, pushes `release/vX.Y.Z` and creates a **prerelease** with the `.vsix`
+   attached (`release.yml`). PRs build and package only.
+2. **Promote** the prerelease (Edit release → uncheck "Set as a pre-release") → `publish.yml` publishes that
+   exact `.vsix` to Open VSX. A version that is already live is skipped, so re-editing a release is safe.
+   `publish.yml` can also be run by hand for any tag.
 
-```sh
-npm run dev-install   # builds, then copies into ~/.dune/extensions/dune.dune-punk
-```
-
-Reload the Dune window, then pick a theme in **Settings → Appearance** (or `workbench.colorTheme`)
-and the icons via `workbench.iconTheme: "dune-punk-icons"` (or `"dune-punk-circles"`).
-
-Typography follows Daemon's recommended setup: [Rajdhani](https://fonts.google.com/specimen/Rajdhani)
-for the UI and [Hack](https://sourcefoundry.org/hack/) for code. Dune themes can name a font but not
-ship one, so install both; without Rajdhani the UI falls back to the system font. Set the editor and
-terminal font yourself, since themes can't:
-
-```jsonc
-"editor.fontFamily": "Hack, Menlo, monospace",
-"terminal.integrated.fontFamily": "Hack, Menlo, monospace"
-```
-
-In plain VS Code or Cursor the themes still work as ordinary color themes (editor, terminal,
-syntax, workbench colors); the structural chrome appears in Dune, which exposes its geometry to
-themes through the `dune.*` token namespace.
-
-
-Daemon references: the [Aurorae decorations](https://www.opendesktop.org/p/2213955/),
-[color scheme](https://www.opendesktop.org/p/2213953/), [Plasma style](https://www.opendesktop.org/p/2213923/),
-[Kvantum theme](https://www.opendesktop.org/p/2211151/), [icon theme](https://www.opendesktop.org/p/2213960/),
-and [Konsole colors](https://www.opendesktop.org/p/2214176/). Edgerunner follows the Netrunner Notes example in
-[foldable-sim](https://github.com/getpopcraft/foldable-sim/tree/main/examples/tailwind).
+Open VSX auth: the `OVSX_PAT` repository secret while it exists; once `publish.yml` is registered as the
+`spacedevin` namespace's trusted publisher, delete the secret and releases use GitHub OIDC.
 
 ## Design notes
 
