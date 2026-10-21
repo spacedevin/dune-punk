@@ -289,12 +289,6 @@ function duneChrome(p) {
     "dune.titlebar-omnibar-max-w": "560px",
     // Pressed toggles on a colored band invert (ink square, band-colored glyph) like Aurorae's
     // square window glyphs; the ⌘P chip does the same.
-    // Workbench-drawn macOS traffic lights (borderless transparent window): dark discs on the band.
-    "dune.traffic-close": onTitle ? p.titleFg : "#FF5F57",
-    "dune.traffic-min": onTitle ? p.titleFg : "#FEBC2E",
-    "dune.traffic-zoom": onTitle ? p.titleFg : "#28C840",
-    "dune.traffic-glyph": onTitle ? p.titleBg : "#4D0000",
-    "dune.traffic-size": "13px",
     "dune.titlebar-btn-active-bg": onTitle ? "transparent" : p.accent,
     "dune.titlebar-btn-active-fg": onTitle ? p.titleFg : p.accentFg,
     "dune.titlebar-kbd-bg": onTitle ? p.titleFg : p.raised,
