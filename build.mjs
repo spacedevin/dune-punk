@@ -63,6 +63,9 @@ const kbtn = (bar, border, fill, tick) => [
   `linear-gradient(315deg, transparent 0 7px, ${fill} 7px) 6px 1px / calc(100% - 7px) calc(100% - 2px) no-repeat`,
   `linear-gradient(315deg, transparent 0 7.4px, ${border} 7.4px) 5px 0 / calc(100% - 5px) 100% no-repeat`
 ].join(", ");
+// CRT scanlines over a solid fill: 1px dark line every 3px. `pos` limits the layer (e.g. to keep a
+// transparent corner cut clean).
+const scan = (pos = "") => `repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.2) 0 1px, transparent 1px 3px)${pos ? " " + pos + " no-repeat" : ""}`;
 // Kvantum checkbox: four corner brackets (5px arms, 1.5px), and an X for the checked state.
 const brackets = (c) => {
   const g = `linear-gradient(${c}, ${c})`;
@@ -267,7 +270,7 @@ function duneChrome(p) {
     "dune.titlebar-radius": "0px",
     // Aurorae band: top-left corner cut at 45°.
     "dune.surface-titleBar": K && onTitle
-      ? `linear-gradient(135deg, ${p.titleBg} 0 6px, transparent 6px), linear-gradient(135deg, transparent 0 13px, ${p.titleBg} 13px)`
+      ? `${scan("13px 0 / calc(100% - 13px) 100%")}, ${scan("0 13px / 13px calc(100% - 13px)")}, linear-gradient(135deg, ${p.titleBg} 0 6px, transparent 6px), linear-gradient(135deg, transparent 0 13px, ${p.titleBg} 13px)`
       : K && !onTitle
       ? `linear-gradient(180deg, ${p.frame} 0 3px, transparent 3px), linear-gradient(0deg, ${p.frame} 0 1px, transparent 1px), ${p.titleBg}`
       : `linear-gradient(0deg, ${p.frame} 0 1px, transparent 1px), ${p.titleBg}`,
@@ -299,11 +302,11 @@ function duneChrome(p) {
     "dune.activity-item-gap": "2px",
     "dune.activity-item-fg": p.text,
     "dune.activity-item-hover-bg": K ? kbox(p.frame2, mix(p.text, p.sidebar, 0.07), 5) : `${stripe(p.hot)}, ${a(p.text, "14")}`,
-    "dune.activity-item-active-bg": K ? kbox(p.frame2, p.accent, 5) : `${stripe(p.accent)}, ${cutBR(a(p.accent, "30"), 8)}`,
+    "dune.activity-item-active-bg": K ? `${scan()}, ${kbox(p.frame2, p.accent, 5)}` : `${stripe(p.accent)}, ${cutBR(a(p.accent, "30"), 8)}`,
     "dune.activity-item-radius-top": "0px",
     "dune.activity-item-fg-top": p.textMuted,
     // Top-mode rail buttons (the default layout): the same Kvantum button as everywhere else.
-    "dune.activity-item-active-bg-top": K ? kbtn(p.frame2, p.frame2, p.accent, p.frame2) : a(p.text, "14"),
+    "dune.activity-item-active-bg-top": K ? `${scan()}, ${kbtn(p.frame2, p.frame2, p.accent, p.frame2)}` : a(p.text, "14"),
     "dune.activity-item-hover-bg-top": K ? kbtn(p.frame, p.frame, p.button) : a(p.text, "0F"),
     "dune.activity-seg-1": K ? "transparent" : stripe(a(p.seg[0], "AA"), 2),
     "dune.activity-seg-2": K ? "transparent" : stripe(a(p.seg[1], "AA"), 2),
@@ -363,15 +366,15 @@ function duneChrome(p) {
     "dune.tab-strip-border-width": "1px",
     "dune.tab-pad-x": "10px",
     // Active tab: slate-teal fill, a 2px neon top rule, bottom-right corner cut (Kvantum tab).
-    "dune.tab-active-bg": K ? ktab(p.frame2, p.tabActiveBg) : `linear-gradient(180deg, ${p.tabTop ?? p.hot} 0 2px, transparent 2px), ${cutBR(p.tabActiveBg, 8)}`,
+    "dune.tab-active-bg": K ? `${scan()}, ${ktab(p.frame2, p.tabActiveBg)}` : `linear-gradient(180deg, ${p.tabTop ?? p.hot} 0 2px, transparent 2px), ${cutBR(p.tabActiveBg, 8)}`,
     "dune.tab-active-border": "transparent",
     // Kit buttons / segmented controls / checkboxes (Kvantum widget set).
     "dune.btn-bg": K ? kbtn(p.frame, p.frame, p.button) : (p.button ?? p.widget),
     "dune.btn-bg-hover": K ? kbtn(p.frame2, p.frame2, p.button) : mix(p.text, p.button ?? p.widget, 0.12),
     "dune.btn-border": "transparent",
-    "dune.btn-primary-bg": K ? kbtn(p.frame2, p.frame2, p.accent, p.frame2) : p.accent,
+    "dune.btn-primary-bg": K ? `${scan()}, ${kbtn(p.frame2, p.frame2, p.accent, p.frame2)}` : p.accent,
     "dune.btn-primary-bg-hover": K ? kbtn(p.frame2, p.frame2, mix(p.frame2, p.accent, 0.12), p.frame2) : p.accentHover,
-    "dune.seg-active-bg": K ? cutBR(p.accent, 6) : p.accent,
+    "dune.seg-active-bg": K ? `${scan()}, ${cutBR(p.accent, 6)}` : p.accent,
     "dune.check-radius": "0px",
     // Opt every hand-rolled field / button / tab / chip into the same control kit.
     "dune.kit-controls": K ? "on" : "off",
@@ -394,7 +397,7 @@ function duneChrome(p) {
     "dune.composer-bg": K ? kbox(p.frame, p.input, 8, p.frame) : p.input,
     "dune.composer-border": K ? "transparent" : p.frame,
     "dune.composer-focus-shadow": K ? `0 0 12px ${a(p.frame2, "55")}` : "none",
-    "dune.panel-tab-active-bg": K ? ktab(p.frame2, p.accent) : a(p.text, "14"),
+    "dune.panel-tab-active-bg": K ? `${scan()}, ${ktab(p.frame2, p.accent)}` : a(p.text, "14"),
     "dune.panel-tab-active-border": K ? "transparent" : p.frame,
     // ——— Motion (all reduced-motion guarded by the app) ———
     // Buttons glitch (RGB split) once on hover; a newly selected row flickers like a neon tube;
@@ -404,7 +407,7 @@ function duneChrome(p) {
     "dune.titlebar-scan": K ? `linear-gradient(90deg, transparent, ${a("#FFFFFF", "2E")}, transparent) 0 0 / 22% 100% no-repeat` : "none",
     "dune.titlebar-anim": K ? "dune-scan 9s linear infinite" : "none",
     // Selected tree row: Daemon's 3px neon bar on the left of a slate-teal fill.
-    "dune.tree-row-selected-bg": `${stripe(p.rowBar ?? p.hot)}, ${p.selection}`,
+    "dune.tree-row-selected-bg": `${scan()}, ${stripe(p.rowBar ?? p.hot)}, ${p.selection}`,
     // Square, thin, red idle → cyan on hover (Kvantum scrollbar).
     "dune.scrollbar-size": "8px",
     "dune.scrollbar-radius": "0px",
@@ -430,7 +433,7 @@ function duneChrome(p) {
     "dune.settings-nav-seg-3": navSeg(2),
     "dune.settings-nav-seg-4": navSeg(3),
     "dune.settings-nav-hover-bg": K ? kbox(p.frame2, mix(p.text, p.sidebar, 0.07), 5) : `${stripe(p.hot)}, ${a(p.text, "12")}`,
-    "dune.settings-nav-active-bg": K ? kbox(p.frame2, p.accent, 5) : cut(p.accent, 6),
+    "dune.settings-nav-active-bg": K ? `${scan()}, ${kbox(p.frame2, p.accent, 5)}` : cut(p.accent, 6),
     "dune.settings-nav-active-fg": p.accentFg,
     "dune.settings-scope-active-bg": p.accent,
     "dune.settings-scope-active-fg": p.accentFg,
@@ -440,6 +443,33 @@ function duneChrome(p) {
     "dune.repo-color-1": p.seg[0],
     "dune.repo-color-2": p.seg[2],
     "dune.repo-color-3": p.seg[1]
+  };
+}
+
+// HUD layout (Edgerunner, after the Netrunner Notes reference): panels float on a void + cyan grid
+// canvas, chamfered top-right / bottom-left, each with its own accent edge (volt left bar on the
+// files, ice top rule on the editor, blood right bar on the agents column), solid volt selection
+// with void type, and CRT scanlines over the whole window.
+function hudChrome(p) {
+  const void_ = "#07070B", grid = "rgba(0, 240, 255, 0.05)";
+  return {
+    "dune.app-canvas-image": `linear-gradient(${grid} 1px, transparent 1px) 0 0 / 28px 28px, linear-gradient(90deg, ${grid} 1px, transparent 1px) 0 0 / 28px 28px, linear-gradient(${void_}, ${void_})`,
+    "dune.center-bg": "transparent",
+    "dune.canvas-pad": "8px",
+    "dune.part-gap": "8px",
+    "dune.split-size": "8px",
+    "dune.part-primary-border-width": "0 0 0 4px",
+    "dune.part-primary-border-color": `${p.frame}`,
+    "dune.part-editor-border-width": "2px 0 0 0",
+    "dune.part-editor-border-color": `${p.frame2Orig ?? p.data}`,
+    "dune.part-secondary-border-width": "0 4px 0 0",
+    "dune.part-secondary-border-color": `${p.hot}`,
+    "dune.part-panel-border-width": "1px 0 0 0",
+    "dune.part-panel-border-color": "#23252F",
+    "dune.part-clip": "polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px))",
+    "dune.screen-overlay": "repeating-linear-gradient(transparent 0 2px, rgba(0, 0, 0, 0.18) 2px 3px)",
+    "dune.tree-row-selected-bg": `${p.frame}`,
+    "dune.tree-row-selected-fg": void_
   };
 }
 
@@ -1096,7 +1126,7 @@ function validate(p, c) {
 mkdirSync(join(root, "themes"), { recursive: true });
 let failed = false;
 for (const p of VARIANTS) {
-  const c = { ...colors(p), ...duneChrome(p) };
+  const c = { ...colors(p), ...duneChrome(p), ...(p.hud ? hudChrome(p) : {}) };
   const errs = validate(p, c);
   if (errs.length) {
     failed = true;

@@ -250,9 +250,11 @@ const samurai = {
 
 // Edgerunner — the three-colour 2077 HUD: HUD yellow frames/selection, ICE cyan headings & data,
 // alarm red for alerts/badges, on near-black.
-const HUD = { yellow: "#FCEE0A", cyan: "#5EF6FF", red: "#FF003C", bg: "#0D1014", panel: "#0A0C0F", well: "#07090B" };
+// Exact Netrunner Notes palette (getpopcraft/foldable-sim examples/tailwind): volt / ice / blood.
+const HUD = { yellow: "#FCEE0A", cyan: "#00F0FF", red: "#FF003C", bg: "#0E0F16", panel: "#0E0F16", well: "#07070B", edge: "#23252F" };
 const edgerunner = {
   file: "dune-punk-edgerunner-color-theme.json",
+  hud: true,
   name: "Dune Punk Edgerunner",
   editor: HUD.bg,
   widget: HUD.panel,
