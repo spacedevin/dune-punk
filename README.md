@@ -58,13 +58,18 @@ The Dune-only parts live in `dune.*` color keys and top-level theme fields that 
 
 ## Publishing
 
-Releases are automatic. Every push to `main` runs [tishlang/sem](https://github.com/tishlang/sem): it reads the
-[conventional commits](https://www.conventionalcommits.org) since the last tag (`feat` → minor, `fix` / `perf` → patch,
-`!` / `BREAKING CHANGE` → major; `chore` / `docs` / `ci` don't release), tags `vX.Y.Z`, writes the GitHub release
-notes, and the same workflow packages that version and publishes it to Open VSX (the `.vsix` is attached to the
-release too). Pushes to other branches and PRs only build and package.
+Releases follow the knoeone pattern:
 
-Open VSX auth: the `OVSX_PAT` repository secret while it exists; after this workflow is registered as the
+1. **Push to `main`** → [tishlang/sem](https://github.com/tishlang/sem) reads the
+   [conventional commits](https://www.conventionalcommits.org) since the last tag (`feat` → minor,
+   `fix` / `perf` → patch, `!` / `BREAKING CHANGE` → major; `chore` / `docs` / `ci` don't release). CI stamps
+   that version, packages the `.vsix`, pushes `release/vX.Y.Z` and creates a **prerelease** with the `.vsix`
+   attached (`release.yml`). PRs build and package only.
+2. **Promote** the prerelease (Edit release → uncheck "Set as a pre-release") → `publish.yml` publishes that
+   exact `.vsix` to Open VSX. A version that is already live is skipped, so re-editing a release is safe.
+   `publish.yml` can also be run by hand for any tag.
+
+Open VSX auth: the `OVSX_PAT` repository secret while it exists; once `publish.yml` is registered as the
 `spacedevin` namespace's trusted publisher, delete the secret and releases use GitHub OIDC.
 
 ## Design notes
