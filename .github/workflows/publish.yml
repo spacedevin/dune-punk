@@ -1,83 +1,79 @@
-name: Build & Release
+# When a prerelease is promoted to a full release (Edit release → uncheck "Set as a pre-release"),
+# publish its .vsix to Open VSX. Prereleases never leave GitHub. Re-running on an `edited` event is
+# safe: a version that is already live on Open VSX is skipped.
+#
+# Open VSX auth: the OVSX_PAT secret while it exists; once THIS workflow (publish.yml) is registered
+# as the spacedevin namespace's trusted publisher on open-vsx.org, delete the secret and releases
+# authenticate with a short-lived GitHub OIDC token.
+
+name: Publish to Open VSX
+
 on:
-  push:
-    branches: ["**"]
-  pull_request:
+  release:
+    types: [released, edited]
   workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to (re)publish, e.g. v0.2.0"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
 
 jobs:
-  # Every push / PR: regenerate, check the committed themes match, package the .vsix.
-  package:
+  publish:
+    # Only full releases. Skip while still a prerelease/draft.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.release.prerelease == false && github.event.release.draft == false)
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      # Theme JSONs are generated from palette.mjs / variants.mjs; the Dune key list is optional at
-      # build time (validation skips the key-name check when it is absent).
-      - run: node build.mjs
-      - name: Generated themes are committed
-        run: git diff --exit-code -- themes icons
-      - run: npx -y @vscode/vsce package --no-dependencies
-      - uses: actions/upload-artifact@v4
-        with:
-          name: vsix
-          path: "*.vsix"
+      - uses: actions/checkout@v7
 
-  # main only: tishlang/sem reads the conventional commits since the last tag (feat → minor,
-  # fix/perf → patch, breaking → major, chore/docs/ci → nothing), tags + creates the GitHub release,
-  # and this job publishes that exact version to Open VSX. Nothing is committed back to main.
-  release:
-    needs: package
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      id-token: write
-    steps:
-      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v7
         with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - uses: tishlang/sem@v1
-        id: sem
-        with:
-          config: |
-            branches: [main]
-            tagFormat: v${version}
-            plugins:
-              - "@sem/commit-analyzer"
-              - "@sem/release-notes-generator"
-              - "@sem/github"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Package the released version
-        if: steps.sem.outputs.new_release_published == 'true'
-        env:
-          VERSION: ${{ steps.sem.outputs.new_release_version }}
+          node-version: "24"
+
+      - name: Resolve tag/version
+        id: ver
         run: |
-          npm version "$VERSION" --no-git-tag-version --allow-same-version
-          node build.mjs
-          npx -y @vscode/vsce package --no-dependencies
-      # Token while the OVSX_PAT secret exists (first releases); once this workflow is registered as
-      # the namespace's trusted publisher on open-vsx.org, delete the secret and releases authenticate
-      # with a short-lived GitHub OIDC token instead.
-      - name: Publish to Open VSX
-        if: steps.sem.outputs.new_release_published == 'true'
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then TAG="${{ inputs.tag }}"; else TAG="${{ github.event.release.tag_name }}"; fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "version=${TAG#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Already on Open VSX?
+        id: live
+        env:
+          VERSION: ${{ steps.ver.outputs.version }}
+        run: |
+          set -euo pipefail
+          ID=$(node -p "const p=require('./package.json'); p.publisher + '/' + p.name")
+          CODE=$(curl -s -o /dev/null -w "%{http_code}" "https://open-vsx.org/api/$ID/$VERSION")
+          if [ "$CODE" = "200" ]; then
+            echo "::notice::$ID $VERSION is already published — nothing to do."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Download the release .vsix
+        if: steps.live.outputs.skip != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release download "${{ steps.ver.outputs.tag }}" --pattern "*.vsix" --dir dist
+
+      - name: Publish
+        if: steps.live.outputs.skip != 'true'
         env:
           OVSX_PAT: ${{ secrets.OVSX_PAT }}
         run: |
+          set -euo pipefail
           if [ -n "$OVSX_PAT" ]; then
-            npx -y ovsx publish *.vsix -p "$OVSX_PAT"
+            npx -y ovsx publish dist/*.vsix -p "$OVSX_PAT"
           else
-            npx -y ovsx publish *.vsix --trusted-publishing
+            npx -y ovsx publish dist/*.vsix --trusted-publishing
           fi
-      - name: Attach the .vsix to the GitHub release
-        if: steps.sem.outputs.new_release_published == 'true'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAG: ${{ steps.sem.outputs.new_release_git_tag }}
-        run: gh release upload "$TAG" *.vsix --clobber
