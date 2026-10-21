@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 360" width="1280" height="360" font-family="Rajdhani, Orbitron, 'Eurostile', 'Bank Gothic', 'Arial Narrow', sans-serif">
+  <defs>
+    <pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse">
+      <path d="M28 0H0V28" fill="none" stroke="#5DF4FE" stroke-opacity="0.07" stroke-width="1"/>
+    </pattern>
+    <pattern id="scan" width="3" height="3" patternUnits="userSpaceOnUse">
+      <rect width="3" height="1" fill="#000" fill-opacity="0.22"/>
+    </pattern>
+    <filter id="glowRed" x="-20%" y="-50%" width="140%" height="200%">
+      <feGaussianBlur stdDeviation="9" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="glowCyan" x="-20%" y="-50%" width="140%" height="200%">
+      <feGaussianBlur stdDeviation="5" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <clipPath id="cut">
+      <polygon points="0,0 1252,0 1280,28 1280,360 28,360 0,332"/>
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#cut)">
+    <rect width="1280" height="360" fill="#210E15"/>
+    <rect width="1280" height="360" fill="url(#grid)"/>
+
+    <!-- circuit traces -->
+    <g fill="none" stroke="#710100" stroke-width="2" stroke-opacity="0.9">
+      <path d="M0 300H220L270 250H520"/>
+      <path d="M1280 70H1060L1010 120H860"/>
+      <path d="M760 360V330L800 290H1100"/>
+      <rect x="516" y="246" width="8" height="8" fill="#710100"/>
+      <rect x="856" y="116" width="8" height="8" fill="#710100"/>
+    </g>
+
+    <!-- title band (the Aurorae bar) with a cut top-left corner + corner tick -->
+    <polygon points="70,40 1210,40 1210,96 54,96 54,56" fill="#FF5048"/>
+    <polygon points="54,40 64,40 54,50" fill="#FF5048"/>
+    <text x="88" y="78" font-size="22" font-weight="700" letter-spacing="6" fill="#070D19">// D43M0N  ::  NC-NET  ::  SECURE CHANNEL</text>
+    <g fill="#070D19">
+      <rect x="1100" y="60" width="14" height="14"/><rect x="1124" y="60" width="14" height="14"/><rect x="1148" y="60" width="14" height="14"/>
+    </g>
+
+    <!-- wordmark -->
+    <text x="64" y="212" font-size="104" font-weight="800" letter-spacing="10" fill="#FF5048" filter="url(#glowRed)">DUNE PUNK</text>
+    <text x="64" y="212" font-size="104" font-weight="800" letter-spacing="10" fill="none" stroke="#5DF4FE" stroke-width="1.2" stroke-opacity="0.55" transform="translate(4 -3)">DUNE PUNK</text>
+    <rect x="648" y="134" width="20" height="78" fill="#FDF500"/>
+
+    <text x="66" y="258" font-size="26" font-weight="600" letter-spacing="3" fill="#5DF4FE" filter="url(#glowCyan)">CYBERPUNK 2077 // DAEMON 2.0 — DUNE · VS CODE · CURSOR</text>
+
+    <!-- variant chips -->
+    <g font-size="17" font-weight="700" letter-spacing="3">
+      <polygon points="66,284 248,284 248,312 76,312 66,302" fill="#355D65" stroke="#5DF4FE"/>
+      <text x="86" y="304" fill="#5DF4FE">DAEMON</text>
+      <polygon points="262,284 444,284 444,312 272,312 262,302" fill="#0B1A1C" stroke="#1AC5B0"/>
+      <text x="282" y="304" fill="#1AC5B0">NETRUNNER</text>
+      <polygon points="458,284 640,284 640,312 468,312 458,302" fill="#2A0A10" stroke="#FB3048"/>
+      <text x="478" y="304" fill="#FB3048">ARASAKA</text>
+      <polygon points="654,284 836,284 836,312 664,312 654,302" fill="#1E1C05" stroke="#FDF500"/>
+      <text x="674" y="304" fill="#FDF500">SAMURAI</text>
+      <polygon points="850,284 1032,284 1032,312 860,312 850,302" fill="#FCEE0A"/>
+      <text x="870" y="304" fill="#07070B">EDGERUNNER</text>
+    </g>
+
+    <!-- barcode -->
+    <g fill="#FF5048" fill-opacity="0.85">
+      <rect x="1156" y="140" width="3" height="120"/><rect x="1163" y="140" width="1" height="120"/><rect x="1168" y="140" width="5" height="120"/>
+      <rect x="1177" y="140" width="1" height="120"/><rect x="1182" y="140" width="2" height="120"/><rect x="1188" y="140" width="6" height="120"/>
+      <rect x="1198" y="140" width="1" height="120"/><rect x="1203" y="140" width="3" height="120"/><rect x="1210" y="140" width="1" height="120"/>
+      <rect x="1215" y="140" width="4" height="120"/><rect x="1223" y="140" width="1" height="120"/><rect x="1228" y="140" width="2" height="120"/>
+      <rect x="1234" y="140" width="7" height="120"/><rect x="1245" y="140" width="1" height="120"/><rect x="1250" y="140" width="3" height="120"/>
+    </g>
+    <text x="1156" y="282" font-size="13" letter-spacing="3" fill="#FF5048" fill-opacity="0.8">0x2077 // v0.1</text>
+
+    <!-- scanlines over everything -->
+    <rect width="1280" height="360" fill="url(#scan)"/>
+  </g>
+  <!-- outer 1px frame following the cut -->
+  <polygon points="0.5,0.5 1252,0.5 1279.5,28 1279.5,359.5 28,359.5 0.5,332" fill="none" stroke="#FF5048" stroke-width="1"/>
+</svg>

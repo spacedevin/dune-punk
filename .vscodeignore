@@ -2,5 +2,7 @@
 .dune/**
 .github/**
 .preview/**
+assets/banner.*
+assets/screenshots/**
 node_modules/**
 scripts/**
