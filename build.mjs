@@ -134,7 +134,7 @@ function duneChrome(p) {
     "dune.surface-panel": p.panel,
     "dune.surface-activityBar": p.sidebar,
     // Mirror of the title band: bottom-right corner cut at 45° with a solid tick in the corner.
-    "dune.surface-statusBar": p.seamlessStatus ? `linear-gradient(315deg, ${p.frame} 0 5px, transparent 5px), linear-gradient(180deg, ${p.frame} 0 1px, transparent 1px), linear-gradient(315deg, transparent 0 12px, ${p.sidebar} 12px)` : p.plainStatus ? `linear-gradient(180deg, ${p.error} 0 1px, transparent 1px), ${p.sidebar}` : p.sidebar,
+    "dune.surface-statusBar": p.seamlessStatus ? `linear-gradient(315deg, ${p.frame} 0 6px, transparent 6px), linear-gradient(180deg, ${p.frame} 0 1px, transparent 1px), linear-gradient(315deg, transparent 0 13px, ${p.sidebar} 13px)` : p.plainStatus ? `linear-gradient(180deg, ${p.error} 0 1px, transparent 1px), ${p.sidebar}` : p.sidebar,
     "dune.surface-widget": p.widget,
     "dune.surface-overlay": p.widget,
     "dune.surface-input": p.input,
@@ -267,7 +267,7 @@ function duneChrome(p) {
     "dune.titlebar-radius": "0px",
     // Aurorae band: top-left corner cut at 45°.
     "dune.surface-titleBar": K && onTitle
-      ? `linear-gradient(135deg, ${p.titleBg} 0 5px, transparent 5px), linear-gradient(135deg, transparent 0 12px, ${p.titleBg} 12px)`
+      ? `linear-gradient(135deg, ${p.titleBg} 0 6px, transparent 6px), linear-gradient(135deg, transparent 0 13px, ${p.titleBg} 13px)`
       : K && !onTitle
       ? `linear-gradient(180deg, ${p.frame} 0 3px, transparent 3px), linear-gradient(0deg, ${p.frame} 0 1px, transparent 1px), ${p.titleBg}`
       : `linear-gradient(0deg, ${p.frame} 0 1px, transparent 1px), ${p.titleBg}`,
@@ -373,6 +373,8 @@ function duneChrome(p) {
     "dune.btn-primary-bg-hover": K ? kbtn(p.frame2, p.frame2, mix(p.frame2, p.accent, 0.12), p.frame2) : p.accentHover,
     "dune.seg-active-bg": K ? cutBR(p.accent, 6) : p.accent,
     "dune.check-radius": "0px",
+    // Opt every hand-rolled field / button / tab / chip into the same control kit.
+    "dune.kit-controls": K ? "on" : "off",
     // Kvantum inputs: outline with bottom-right cut + solid tick top-left; cyan on focus.
     "dune.field-bg": K ? `linear-gradient(135deg, ${p.frame} 0 5px, transparent 5px), ${boxBR(p.frame, p.input, 7)}` : p.input,
     "dune.field-bg-focus": K ? `linear-gradient(135deg, ${p.frame2} 0 5px, transparent 5px), ${boxBR(p.frame2, p.input, 7)}` : p.input,
