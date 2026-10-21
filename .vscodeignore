@@ -1,5 +1,8 @@
-.dune/**
-.preview/**
-scripts/**
 *.mjs
+.dune/**
+.github/**
+.preview/**
+assets/banner.*
+assets/screenshots/**
 node_modules/**
+scripts/**

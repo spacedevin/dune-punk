@@ -46,6 +46,46 @@ const kbox = (border, fill, s = 6, tick = border) => {
   ].join(", ");
 };
 
+// Kvantum push button: 1px outline with only the bottom-right corner cut, plus Daemon's 3px red bar
+// riding the left edge (60% height, centred). Fill inset 1px so the outline stays a crisp line.
+const boxBR = (border, fill, s = 7) => {
+  const o = s + 0.4;
+  return [
+    `linear-gradient(315deg, transparent 0 ${s}px, ${fill} ${s}px) 1px 1px / calc(100% - 2px) calc(100% - 2px) no-repeat`,
+    `linear-gradient(315deg, transparent 0 ${o}px, ${border} ${o}px)`
+  ].join(", ");
+};
+// Kvantum push button, as in the Daemon widget gallery: a detached full-height bar on the left (3px,
+// 2px gap), then ONE-colour 1px outline with the bottom-right corner cut; optional solid corner tick.
+const kbtn = (bar, border, fill, tick) => [
+  ...(tick ? [`linear-gradient(315deg, ${tick} 0 4px, transparent 4px)`] : []),
+  `linear-gradient(${bar}, ${bar}) 0 0 / 3px 100% no-repeat`,
+  `linear-gradient(315deg, transparent 0 7px, ${fill} 7px) 6px 1px / calc(100% - 7px) calc(100% - 2px) no-repeat`,
+  `linear-gradient(315deg, transparent 0 7.4px, ${border} 7.4px) 5px 0 / calc(100% - 5px) 100% no-repeat`
+].join(", ");
+// CRT scanlines over a solid fill: 1px dark line every 3px. `pos` limits the layer (e.g. to keep a
+// transparent corner cut clean).
+const scan = (pos = "") => `repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.2) 0 1px, transparent 1px 3px)${pos ? " " + pos + " no-repeat" : ""}`;
+// Kvantum checkbox: four corner brackets (5px arms, 1.5px), and an X for the checked state.
+const brackets = (c) => {
+  const g = `linear-gradient(${c}, ${c})`;
+  return [
+    `${g} left top / 5px 1.5px no-repeat`, `${g} left top / 1.5px 5px no-repeat`,
+    `${g} right top / 5px 1.5px no-repeat`, `${g} right top / 1.5px 5px no-repeat`,
+    `${g} left bottom / 5px 1.5px no-repeat`, `${g} left bottom / 1.5px 5px no-repeat`,
+    `${g} right bottom / 5px 1.5px no-repeat`, `${g} right bottom / 1.5px 5px no-repeat`
+  ].join(", ");
+};
+const xmark = (c) =>
+  `linear-gradient(45deg, transparent calc(50% - 1px), ${c} calc(50% - 1px) calc(50% + 1px), transparent calc(50% + 1px)) 3px 3px / calc(100% - 6px) calc(100% - 6px) no-repeat, ` +
+  `linear-gradient(-45deg, transparent calc(50% - 1px), ${c} calc(50% - 1px) calc(50% + 1px), transparent calc(50% + 1px)) 3px 3px / calc(100% - 6px) calc(100% - 6px) no-repeat`;
+// Kvantum tab: teal fill, cyan outline (open at the bottom), bottom-left cut, solid tick top-right.
+const ktab = (border, fill) => [
+  `linear-gradient(225deg, ${border} 0 5px, transparent 5px)`,
+  `linear-gradient(45deg, transparent 0 7px, ${fill} 7px) 1px 1px / calc(100% - 2px) calc(100% - 1px) no-repeat`,
+  `linear-gradient(45deg, transparent 0 7.4px, ${border} 7.4px)`
+].join(", ");
+
 // Daemon buttons are dark outlined cards: frame border, accent label (body text if the accent
 // can't hold 4.5:1 on the dark fill).
 const btnFg = (p) => (contrast(p.accent, p.button ?? p.widget) >= 4.5 ? p.accent : p.text);
@@ -60,7 +100,7 @@ function cornerSvg(p, mirror) {
   const cap = `M${pts([[0, 18], [18, 0], [40, 0], [36, 4], [20, 4], [4, 20], [4, 44], [0, 48]])} Z`;
   const topArm = `<rect x='40' y='${mirror ? 158.5 : 0}' width='60' height='1.5' fill='${enc(p.frame)}'/>`;
   const leftArm = `<rect x='0' y='${mirror ? 0 : 48}' width='1.5' height='112' fill='${enc(p.frame)}'/>`;
-  const hot = `<rect x='7' y='${mirror ? 160 - 31 : 26}' width='5' height='5' fill='${enc(p.frame2)}'/>`;
+  const hot = `<rect x='7' y='${mirror ? 160 - 31 : 26}' width='5' height='5' fill='${enc(!mirror && p.titleIsBlock ? p.titleFg : p.frame2)}'/>`;
   const ticks = BARCODE.map(([x, w]) => `<rect x='${x}' y='${mirror ? 160 - 8 : 4}' width='${w}' height='4' fill='${enc(p.frame)}' fill-opacity='0.7'/>`).join("");
   const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 160'><path fill='${enc(p.frame)}' d='${cap}'/>${topArm}${leftArm}${hot}${ticks}</svg>`;
   return `url("data:image/svg+xml,${svg.replace(/</g, "%3C").replace(/>/g, "%3E")}")`;
@@ -96,7 +136,8 @@ function duneChrome(p) {
     "dune.surface-sidebar": p.sidebar,
     "dune.surface-panel": p.panel,
     "dune.surface-activityBar": p.sidebar,
-    "dune.surface-statusBar": p.plainStatus ? `linear-gradient(180deg, ${p.error} 0 1px, transparent 1px), ${p.sidebar}` : p.sidebar,
+    // Mirror of the title band: bottom-right corner cut at 45° with a solid tick in the corner.
+    "dune.surface-statusBar": p.seamlessStatus ? `linear-gradient(315deg, ${p.frame} 0 6px, transparent 6px), linear-gradient(180deg, ${p.frame} 0 1px, transparent 1px), linear-gradient(315deg, transparent 0 13px, ${p.sidebar} 13px)` : p.plainStatus ? `linear-gradient(180deg, ${p.error} 0 1px, transparent 1px), ${p.sidebar}` : p.sidebar,
     "dune.surface-widget": p.widget,
     "dune.surface-overlay": p.widget,
     "dune.surface-input": p.input,
@@ -132,7 +173,7 @@ function duneChrome(p) {
     "dune.state-modified": p.data,
     "dune.state-deleted": D.red2,
     "dune.state-conflict": D.orange,
-    "dune.window-bg": p.deep,
+    "dune.window-bg": K ? "transparent" : p.deep,
     "dune.window-border": p.frame,
     "dune.palette-kbd-bg-top": p.raised,
     "dune.palette-kbd-bg-bottom": p.widget,
@@ -155,9 +196,10 @@ function duneChrome(p) {
     "dune.overlay-scrim": a(p.deep, "B3"),
     "dune.shadow-window": `0 0 0 1px ${p.frame}, 0 0 14px ${a(p.frame, "8C")}, 0 0 32px ${a(p.frame, "33")}, 0 12px 32px ${a("#000000", "99")}`,
     "dune.zone-drop-glow": a(p.hot, "2E"),
-    "dune.app-canvas": p.deep,
-    "dune.app-canvas-2": mix(p.frame, p.deep, 0.14),
-    "dune.app-canvas-image": canvasImage(p),
+    // Transparent canvas = transparent window (like LCARS): square edges, no rounded opaque window.
+    "dune.app-canvas": K ? "transparent" : p.deep,
+    "dune.app-canvas-2": K ? "transparent" : mix(p.frame, p.deep, 0.14),
+    "dune.app-canvas-image": K ? "none" : canvasImage(p),
     "dune.welcome-glow": mix(p.frame, p.deep, 0.35),
     "dune.welcome-glow-opacity": "0.4",
     "dune.welcome-dune-1": mix(p.frame, p.deep, 0.22),
@@ -182,10 +224,16 @@ function duneChrome(p) {
     "dune.bubble-radius": "0px",
     "dune.bubble-tail-radius": "0px",
     "dune.part-radius": "0px",
-    "dune.part-border-width": "1px",
-    "dune.part-gap": "6px",
-    "dune.part-pad": "6px",
-    "dune.split-size": "6px",
+    // Daemon: ONE line between panes, never two. Kvantum drops per-pane outlines and lets a 1px gap
+    // over a frame-colored canvas draw the single divider (and the outer window frame).
+    "dune.part-border-width": K ? "0px" : "1px",
+    // Outer window margin stays 6px (transparent window edge / corners untouched); panes butt
+    // against the title band and status bar, and the pane grid shows a solid 1px red gutter.
+    "dune.canvas-pad": "6px",
+    "dune.part-gap": K ? "0px" : "6px",
+    "dune.part-pad": K ? "0px" : "6px",
+    "dune.split-size": K ? "1px" : "6px",
+    "dune.center-bg": K ? p.frame : "transparent",
     "dune.elev-1": `0 0 0 1px ${a(p.frame, "33")}`,
     "dune.elev-2": `0 0 0 1px ${a(p.frame, "77")}, 0 10px 28px ${a("#000000", "99")}`,
     "dune.elev-3": `0 0 0 1px ${p.frame}, 0 0 24px ${a(p.frame, "33")}, 0 20px 48px ${a("#000000", "AA")}`,
@@ -201,24 +249,29 @@ function duneChrome(p) {
     "dune.activity-anim": p.activityAnim ? "dune-lcars-pulse 4.8s ease-in-out infinite" : "none",
 
     "// ——— Frame: chamfered corner brackets ———": "",
-    "dune.frame-corner-size": notPhone("100px"),
+    // Daemon windows are a plain 1px frame — no decorative corner brackets.
+    "dune.frame-corner-size": K ? "0px" : notPhone("100px"),
     "dune.frame-corner-h-tl": notPhone("160px"),
     "dune.frame-corner-img-tl": cornerSvg(p, false),
     "dune.frame-corner-img-bl": cornerSvg(p, true),
-    "dune.statusbar-lead-pad": notPhone("26px"),
+    "dune.statusbar-lead-pad": K ? "0px" : notPhone("26px"),
     "dune.view-header-lead": "14px",
 
     "// ——— Title bar ———": "",
-    "dune.titleBar.controlsPadX": "26",
-    "dune.titleBar.controlsPadY": "17",
+    "dune.titleBar.controlsPadX": K ? "14" : "26",
+    // Measured: band spans y 6–42 (6px canvas gap + 36px bar) → centre 24; 14px disc → top 17.
+    "dune.titleBar.controlsPadY": K ? "17" : "17",
     "dune.titleBar.controlsColorClose": p.lights[0],
     "dune.titleBar.controlsColorMinimize": p.lights[1],
     "dune.titleBar.controlsColorZoom": p.lights[2],
-    "dune.titleBar.controlsDiameter": "12",
-    "dune.titlebar-traffic-pad": "96px",
+    "dune.titleBar.controlsDiameter": K ? "14" : "12",
+    "dune.titlebar-traffic-pad": K ? "80px" : "96px",
     "dune.titlebar-h": "36px",
     "dune.titlebar-radius": "0px",
-    "dune.surface-titleBar": K && !onTitle
+    // Aurorae band: top-left corner cut at 45°.
+    "dune.surface-titleBar": K && onTitle
+      ? `${scan("13px 0 / calc(100% - 13px) 100%")}, ${scan("0 13px / 13px calc(100% - 13px)")}, linear-gradient(135deg, ${p.titleBg} 0 6px, transparent 6px), linear-gradient(135deg, transparent 0 13px, ${p.titleBg} 13px)`
+      : K && !onTitle
       ? `linear-gradient(180deg, ${p.frame} 0 3px, transparent 3px), linear-gradient(0deg, ${p.frame} 0 1px, transparent 1px), ${p.titleBg}`
       : `linear-gradient(0deg, ${p.frame} 0 1px, transparent 1px), ${p.titleBg}`,
     "dune.titlebar-fg": p.titleFg,
@@ -229,11 +282,17 @@ function duneChrome(p) {
     "dune.titlebar-ws-bg": onTitle ? "transparent" : K ? kbox(p.frame, p.button) : `${marker(p.frame)}, ${p.widget}`,
     "dune.titlebar-tools-bg": onTitle ? "transparent" : K ? kbox(p.frame, p.button) : `${marker(p.frame, 315)}, ${p.widget}`,
     "dune.titlebar-omnibar-bg": onTitle && K
-      ? kbox(p.titleFg, a(p.titleFg, "14"), 6)
+      ? `linear-gradient(135deg, transparent 0 6px, ${p.omnibarBg} 6px calc(100% - 6px), transparent calc(100% - 6px)) 0 50% / 100% 24px no-repeat`
       : onTitle
       ? `${marker(p.titleFg)}, ${marker(p.titleFg, 315)}, ${p.omnibarBg ?? p.hot}`
       : K ? kbox(p.frame, p.input) : `${marker(p.hot)}, ${marker(p.frame, 315)}, ${p.input}`,
     "dune.titlebar-omnibar-max-w": "560px",
+    // Pressed toggles on a colored band invert (ink square, band-colored glyph) like Aurorae's
+    // square window glyphs; the ⌘P chip does the same.
+    "dune.titlebar-btn-active-bg": onTitle ? "transparent" : p.accent,
+    "dune.titlebar-btn-active-fg": onTitle ? p.titleFg : p.accentFg,
+    "dune.titlebar-kbd-bg": onTitle ? p.titleFg : p.raised,
+    "dune.titlebar-kbd-fg": onTitle ? p.titleBg : p.text,
 
     "// ——— Activity rail: neon stripe segments ———": "",
     "dune.activity-col": "48px",
@@ -242,10 +301,13 @@ function duneChrome(p) {
     "dune.activity-item-radius": "0px",
     "dune.activity-item-gap": "2px",
     "dune.activity-item-fg": p.text,
-    "dune.activity-item-hover-bg": K ? kbox(p.focus, a(p.text, "10"), 5) : `${stripe(p.hot)}, ${a(p.text, "14")}`,
-    "dune.activity-item-active-bg": K ? kbox(p.focus, a(p.accent, "CC"), 5) : `${stripe(p.accent)}, ${cutBR(a(p.accent, "30"), 8)}`,
+    "dune.activity-item-hover-bg": K ? kbox(p.frame2, mix(p.text, p.sidebar, 0.07), 5) : `${stripe(p.hot)}, ${a(p.text, "14")}`,
+    "dune.activity-item-active-bg": K ? `${scan()}, ${kbox(p.frame2, p.accent, 5)}` : `${stripe(p.accent)}, ${cutBR(a(p.accent, "30"), 8)}`,
     "dune.activity-item-radius-top": "0px",
     "dune.activity-item-fg-top": p.textMuted,
+    // Top-mode rail buttons (the default layout): the same Kvantum button as everywhere else.
+    "dune.activity-item-active-bg-top": K ? `${scan()}, ${kbtn(p.frame2, p.frame2, p.accent, p.frame2)}` : a(p.text, "14"),
+    "dune.activity-item-hover-bg-top": K ? kbtn(p.frame, p.frame, p.button) : a(p.text, "0F"),
     "dune.activity-seg-1": K ? "transparent" : stripe(a(p.seg[0], "AA"), 2),
     "dune.activity-seg-2": K ? "transparent" : stripe(a(p.seg[1], "AA"), 2),
     "dune.activity-seg-3": K ? "transparent" : stripe(a(p.seg[2], "AA"), 2),
@@ -304,12 +366,59 @@ function duneChrome(p) {
     "dune.tab-strip-border-width": "1px",
     "dune.tab-pad-x": "10px",
     // Active tab: slate-teal fill, a 2px neon top rule, bottom-right corner cut (Kvantum tab).
-    "dune.tab-active-bg": `linear-gradient(180deg, ${p.tabTop ?? p.hot} 0 2px, transparent 2px), ${cutBR(p.tabActiveBg, 8)}`,
+    "dune.tab-active-bg": K ? `${scan()}, ${ktab(p.frame2, p.tabActiveBg)}` : `linear-gradient(180deg, ${p.tabTop ?? p.hot} 0 2px, transparent 2px), ${cutBR(p.tabActiveBg, 8)}`,
     "dune.tab-active-border": "transparent",
+    // Kit buttons / segmented controls / checkboxes (Kvantum widget set).
+    "dune.btn-bg": K ? kbtn(p.frame, p.frame, p.button) : (p.button ?? p.widget),
+    "dune.btn-bg-hover": K ? kbtn(p.frame2, p.frame2, p.button) : mix(p.text, p.button ?? p.widget, 0.12),
+    "dune.btn-border": "transparent",
+    "dune.btn-primary-bg": K ? `${scan()}, ${kbtn(p.frame2, p.frame2, p.accent, p.frame2)}` : p.accent,
+    "dune.btn-primary-bg-hover": K ? kbtn(p.frame2, p.frame2, mix(p.frame2, p.accent, 0.12), p.frame2) : p.accentHover,
+    "dune.seg-active-bg": K ? `${scan()}, ${cutBR(p.accent, 6)}` : p.accent,
+    "dune.check-radius": "0px",
+    // Opt every hand-rolled field / button / tab / chip into the same control kit.
+    "dune.kit-controls": K ? "on" : "off",
+    // Menus / pickers / popovers / palette / sheets: chamfered Kvantum card.
+    "dune.overlay-card-bg": K ? kbox(p.frame, p.widget, 10, p.frame) : p.widget,
+    // Kvantum inputs: outline with bottom-right cut + solid tick top-left; cyan on focus.
+    "dune.field-bg": K ? `linear-gradient(135deg, ${p.frame} 0 5px, transparent 5px), ${boxBR(p.frame, p.input, 7)}` : p.input,
+    "dune.field-bg-focus": K ? `linear-gradient(135deg, ${p.frame2} 0 5px, transparent 5px), ${boxBR(p.frame2, p.input, 7)}` : p.input,
+    "dune.field-border": K ? "transparent" : p.frame,
+    "dune.field-border-focus": K ? "transparent" : p.focus ?? p.hot,
+    "dune.select-chevron": `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='${enc(p.frame2)}' stroke-width='2.5' stroke-linecap='square'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`,
+    // Checkboxes: Kvantum corner brackets [ ]; checked adds an X.
+    "dune.check-appearance": K ? "none" : "auto",
+    "dune.check-size": K ? "15px" : "auto",
+    "dune.check-bg": K ? brackets(p.frame2) : p.input,
+    "dune.check-on-bg": K ? `${xmark(p.frame2)}, ${brackets(p.frame2)}` : p.accent,
+    "dune.check-border": K ? "transparent" : p.frame,
+    "dune.check-on-border": K ? "transparent" : p.accent,
+    // Chat composer: chamfered Kvantum card, neon focus glow.
+    "dune.composer-bg": K ? kbox(p.frame, p.input, 8, p.frame) : p.input,
+    "dune.composer-border": K ? "transparent" : p.frame,
+    "dune.composer-focus-shadow": K ? `0 0 12px ${a(p.frame2, "55")}` : "none",
+    "dune.panel-tab-active-bg": K ? `${scan()}, ${ktab(p.frame2, p.accent)}` : a(p.text, "14"),
+    "dune.panel-tab-active-border": K ? "transparent" : p.frame,
+    // ——— Motion (all reduced-motion guarded by the app) ———
+    // Buttons glitch (RGB split) once on hover; a newly selected row flickers like a neon tube;
+    // a faint light band sweeps the title band every 9s.
+    "dune.btn-hover-anim": K ? "dune-glitch 0.32s steps(3, end) 1" : "none",
+    "dune.row-selected-anim": K ? "dune-flicker 0.7s linear 1" : "none",
+    "dune.titlebar-scan": K ? `linear-gradient(90deg, transparent, ${a("#FFFFFF", "2E")}, transparent) 0 0 / 22% 100% no-repeat` : "none",
+    "dune.titlebar-anim": K ? "dune-scan 9s linear infinite" : "none",
     // Selected tree row: Daemon's 3px neon bar on the left of a slate-teal fill.
-    "dune.tree-row-selected-bg": `${stripe(p.rowBar ?? p.hot)}, ${p.selection}`,
+    "dune.tree-row-selected-bg": `${scan()}, ${stripe(p.rowBar ?? p.hot)}, ${p.selection}`,
     // Square, thin, red idle → cyan on hover (Kvantum scrollbar).
-    "dune.scrollbar-size": "6px",
+    "dune.scrollbar-size": "8px",
+    "dune.scrollbar-radius": "0px",
+    // WebKit draws plain-element scrollbars natively (it ignores ::-webkit-scrollbar here), so tint them;
+    // Monaco scrollables get the square thumb + track via scrollbar-radius/-track.
+    "dune.scrollbar-width": "thin",
+    "dune.scrollbar-color": `${p.scroll ?? p.frame} ${K ? p.input : "transparent"}`,
+    "dune.statusbar-lang-bg": p.plainStatus ? "transparent" : p.accent,
+    "dune.statusbar-lang-fg": p.plainStatus ? p.text : p.accentFg,
+    "dune.statusbar-lang-bg-hover": p.accent,
+    "dune.scrollbar-track": K ? p.input : "transparent",
     "dune.scrollbar-thumb": p.scroll ?? p.frame,
     "dune.scrollbar-thumb-hover": p.scrollHover ?? p.focus ?? p.hot,
 
@@ -323,8 +432,8 @@ function duneChrome(p) {
     "dune.settings-nav-seg-2": navSeg(1),
     "dune.settings-nav-seg-3": navSeg(2),
     "dune.settings-nav-seg-4": navSeg(3),
-    "dune.settings-nav-hover-bg": K ? kbox(p.focus, a(p.text, "10"), 5) : `${stripe(p.hot)}, ${a(p.text, "12")}`,
-    "dune.settings-nav-active-bg": K ? kbox(p.focus, a(p.accent, "CC"), 5) : cut(p.accent, 6),
+    "dune.settings-nav-hover-bg": K ? kbox(p.frame2, mix(p.text, p.sidebar, 0.07), 5) : `${stripe(p.hot)}, ${a(p.text, "12")}`,
+    "dune.settings-nav-active-bg": K ? `${scan()}, ${kbox(p.frame2, p.accent, 5)}` : cut(p.accent, 6),
     "dune.settings-nav-active-fg": p.accentFg,
     "dune.settings-scope-active-bg": p.accent,
     "dune.settings-scope-active-fg": p.accentFg,
@@ -334,6 +443,33 @@ function duneChrome(p) {
     "dune.repo-color-1": p.seg[0],
     "dune.repo-color-2": p.seg[2],
     "dune.repo-color-3": p.seg[1]
+  };
+}
+
+// HUD layout (Edgerunner, after the Netrunner Notes reference): panels float on a void + cyan grid
+// canvas, chamfered top-right / bottom-left, each with its own accent edge (volt left bar on the
+// files, ice top rule on the editor, blood right bar on the agents column), solid volt selection
+// with void type, and CRT scanlines over the whole window.
+function hudChrome(p) {
+  const void_ = "#07070B", grid = "rgba(0, 240, 255, 0.05)";
+  return {
+    "dune.app-canvas-image": `linear-gradient(${grid} 1px, transparent 1px) 0 0 / 28px 28px, linear-gradient(90deg, ${grid} 1px, transparent 1px) 0 0 / 28px 28px, linear-gradient(${void_}, ${void_})`,
+    "dune.center-bg": "transparent",
+    "dune.canvas-pad": "8px",
+    "dune.part-gap": "8px",
+    "dune.split-size": "8px",
+    "dune.part-primary-border-width": "0 0 0 4px",
+    "dune.part-primary-border-color": `${p.frame}`,
+    "dune.part-editor-border-width": "2px 0 0 0",
+    "dune.part-editor-border-color": `${p.frame2Orig ?? p.data}`,
+    "dune.part-secondary-border-width": "0 4px 0 0",
+    "dune.part-secondary-border-color": `${p.hot}`,
+    "dune.part-panel-border-width": "1px 0 0 0",
+    "dune.part-panel-border-color": "#23252F",
+    "dune.part-clip": "polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px))",
+    "dune.screen-overlay": "repeating-linear-gradient(transparent 0 2px, rgba(0, 0, 0, 0.18) 2px 3px)",
+    "dune.tree-row-selected-bg": `${p.frame}`,
+    "dune.tree-row-selected-fg": void_
   };
 }
 
@@ -521,14 +657,14 @@ function colors(p) {
     "statusBar.noFolderForeground": p.text,
     "statusBar.debuggingBackground": p.frame,
     "statusBar.debuggingForeground": p.segFg,
-    "statusBarItem.hoverBackground": p.textBright,
-    "statusBarItem.hoverForeground": p.segFg,
-    "statusBarItem.activeBackground": a(p.textBright, "CC"),
-    "statusBarItem.remoteBackground": p.seg[2],
-    "statusBarItem.remoteForeground": p.segFg,
-    "statusBarItem.prominentBackground": p.seg[0],
-    "statusBarItem.prominentForeground": p.segFg,
-    "statusBarItem.prominentHoverBackground": p.textBright,
+    "statusBarItem.hoverBackground": p.plainStatus ? p.accent : p.textBright,
+    "statusBarItem.hoverForeground": p.plainStatus ? p.accentFg : p.segFg,
+    "statusBarItem.activeBackground": p.plainStatus ? p.accentHover : a(p.textBright, "CC"),
+    "statusBarItem.remoteBackground": p.plainStatus ? T : p.seg[2],
+    "statusBarItem.remoteForeground": p.plainStatus ? p.text : p.segFg,
+    "statusBarItem.prominentBackground": p.plainStatus ? T : p.seg[0],
+    "statusBarItem.prominentForeground": p.plainStatus ? p.text : p.segFg,
+    "statusBarItem.prominentHoverBackground": p.plainStatus ? p.accent : p.textBright,
     "statusBarItem.errorBackground": D.red1,
     "statusBarItem.errorForeground": D.bg2,
     "statusBarItem.warningBackground": D.yellow0,
@@ -990,7 +1126,7 @@ function validate(p, c) {
 mkdirSync(join(root, "themes"), { recursive: true });
 let failed = false;
 for (const p of VARIANTS) {
-  const c = { ...colors(p), ...duneChrome(p) };
+  const c = { ...colors(p), ...duneChrome(p), ...(p.hud ? hudChrome(p) : {}) };
   const errs = validate(p, c);
   if (errs.length) {
     failed = true;
@@ -1000,6 +1136,8 @@ for (const p of VARIANTS) {
     "$schema": "https://raw.githubusercontent.com/duneyou/dune-ide-new/main/apps/tauri-ide/schemas/dune-theme.schema.json",
     name: p.name,
     type: "dark",
+    // Daemon: transparent window (square edges, desktop around the frame), same opt-in as LCARS.
+    ...(p.kvantum ? { duneWindowTransparent: true } : {}),
     semanticHighlighting: true,
     colors: c,
     tokenColors: tokenColors(p),

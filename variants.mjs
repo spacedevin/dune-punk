@@ -13,7 +13,7 @@ const daemon = {
   panel: D.bg1,
   widget: D.night,
   button: D.button,
-  deep: D.bg2,
+  deep: D.bg1,
   raised: D.bg0,
   input: D.surface0,
   frame: D.red2,
@@ -23,6 +23,8 @@ const daemon = {
   textBright: mix(D.blue0, "#FFFFFF", 0.55),
   textMuted: mix(D.blue0, D.bg1, 0.62),
   textFaint: mix(D.blue0, D.bg1, 0.4),
+  // Accent = ink: pressed/active controls read as dark squares with cyan glyphs, which works both on
+  // the burgundy panes and on the salmon title band (Aurorae's square glyphs).
   accent: D.teal,
   accentFg: D.blue0,
   accentHover: mix(D.teal, D.bg0, 0.8),
@@ -48,11 +50,12 @@ const daemon = {
   titleFg: D.ink,
   titleFgMuted: D.ink,
   titleIsBlock: true,
-  omnibarBg: D.red2,
+  omnibarBg: mix(D.red2, D.ink, 0.86),
   omnibarFg: D.ink,
   seg: [D.teal, D.teal, D.teal, D.teal],
   segFg: D.blue0,
   plainStatus: true,
+  seamlessStatus: true,
   error: D.red1,
   warning: D.yellow0,
   success: D.green0,
@@ -245,4 +248,90 @@ const samurai = {
   }
 };
 
-export const VARIANTS = [daemon, netrunner, arasaka, samurai];
+// Edgerunner — the three-colour 2077 HUD: HUD yellow frames/selection, ICE cyan headings & data,
+// alarm red for alerts/badges, on near-black.
+// Exact Netrunner Notes palette (getpopcraft/foldable-sim examples/tailwind): volt / ice / blood.
+const HUD = { yellow: "#FCEE0A", cyan: "#00F0FF", red: "#FF003C", bg: "#0E0F16", panel: "#0E0F16", well: "#07070B", edge: "#23252F" };
+const edgerunner = {
+  file: "dune-punk-edgerunner-color-theme.json",
+  hud: true,
+  name: "Dune Punk Edgerunner",
+  editor: HUD.bg,
+  widget: HUD.panel,
+  input: HUD.well,
+  raised: mix(HUD.yellow, HUD.bg, 0.06),
+  frame: HUD.yellow,
+  frameDim: mix(HUD.yellow, HUD.bg, 0.4),
+  frame2: HUD.cyan,
+  text: "#D9DEE2",
+  textBright: "#FFFFFF",
+  textMuted: mix("#D9DEE2", HUD.bg, 0.66),
+  textFaint: mix("#D9DEE2", HUD.bg, 0.42),
+  tabInactiveFg: mix("#D9DEE2", HUD.bg, 0.66),
+  hot: HUD.red,
+  data: HUD.cyan,
+  error: HUD.red,
+  warning: HUD.yellow,
+  success: D.green0,
+  info: HUD.cyan,
+  seg: [HUD.yellow, HUD.cyan, HUD.red, HUD.yellow],
+  labels: ['"// NC-NET"', '"SECURE"'],
+  syntax: {
+    keyword: HUD.red, storage: HUD.red, func: HUD.yellow, type: HUD.cyan, iface: HUD.cyan,
+    string: mix(HUD.yellow, "#FFFFFF", 0.35), number: D.orange, comment: "#6B737B", property: HUD.cyan, variable: "#D9DEE2",
+    varSpecial: HUD.red, tag: HUD.red, attr: HUD.yellow, constant: D.pink0, operator: HUD.yellow,
+    punct: mix("#D9DEE2", HUD.bg, 0.55), regex: D.green0, invalid: HUD.red, deco: HUD.cyan, jsonKey: HUD.cyan
+  },
+  ansi: {
+    black: HUD.panel, red: HUD.red, green: D.green0, yellow: HUD.yellow,
+    blue: D.purple0, magenta: D.magenta0, cyan: HUD.cyan, white: "#D9DEE2",
+    brBlack: "#4A525A", brRed: D.red2, brGreen: D.yellow1, brYellow: mix(HUD.yellow, "#FFFFFF", 0.5),
+    brBlue: "#B39DF0", brMagenta: D.pink0, brCyan: "#9FFAFF", brWhite: "#FFFFFF"
+  }
+};
+
+// Shared Daemon/Kvantum structure for every variant: the same title band, flat single surface,
+// slim dividers, buttons, tabs, status bar, transparency and motion — only the colours differ.
+// frame = band + outlines, frame2 = active outline/bar/tick, editor = the one surface.
+const punk = (v) => {
+  const sel = mix(v.frame, v.editor, 0.3);
+  return {
+    ...v,
+    kvantum: true,
+    titleIsBlock: true,
+    plainStatus: true,
+    seamlessStatus: true,
+    sidebar: v.editor,
+    panel: v.editor,
+    deep: v.editor,
+    button: v.button ?? v.input,
+    titleBg: v.frame,
+    titleFg: D.bg2,
+    titleFgMuted: D.bg2,
+    omnibarBg: mix(v.frame, "#FFFFFF", 0.88),
+    omnibarFg: D.bg2,
+    lights: [D.bg2, D.bg2, D.bg2],
+    segFg: v.text,
+    selection: sel,
+    accent: sel,
+    accentFg: v.textBright,
+    accentHover: mix(v.frame, v.editor, 0.22),
+    tabActiveBg: sel,
+    tabActiveFg: v.textBright,
+    tabInactiveBg: v.editor,
+    // Selection/active outlines, bars and ticks use the frame hue (as Daemon does with its
+    // selection family), not the secondary accent.
+    frame2: v.frame,
+    focus: v.frame,
+    link: v.frame,
+    rowBar: v.frame,
+    tabTop: v.frame,
+    menuSel: v.frame,
+    menuSelFg: D.bg2,
+    scroll: v.frame,
+    scrollHover: v.textBright,
+    activityAnim: false
+  };
+};
+
+export const VARIANTS = [daemon, punk(netrunner), punk(arasaka), punk(samurai), punk(edgerunner)];
