@@ -25,6 +25,9 @@ jobs:
           path: "*.vsix"
   publish:
     needs: package
+    permissions:
+      contents: read
+      id-token: write
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     steps:
@@ -35,11 +38,17 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      # First release: an OVSX_PAT secret claims the namespace and publishes (Open VSX only accepts a
+      # trusted publisher for an extension that already has a version). After that, register this
+      # workflow as the trusted publisher on open-vsx.org and delete the secret — releases then
+      # authenticate with a short-lived GitHub OIDC token.
       - name: Publish to Open VSX
         env:
           OVSX_PAT: ${{ secrets.OVSX_PAT }}
         run: |
-          if [ -z "$OVSX_PAT" ]; then echo "::error::OVSX_PAT secret is not set (Settings → Secrets → Actions)"; exit 1; fi
-          # First publish: claim the publisher namespace (no-op error if it already exists).
-          npx -y ovsx create-namespace "$(node -p "require('./package.json').publisher")" -p "$OVSX_PAT" || true
-          npx -y ovsx publish *.vsix -p "$OVSX_PAT"
+          if [ -n "$OVSX_PAT" ]; then
+            npx -y ovsx create-namespace "$(node -p "require('./package.json').publisher")" -p "$OVSX_PAT" || true
+            npx -y ovsx publish *.vsix -p "$OVSX_PAT"
+          else
+            npx -y ovsx publish *.vsix --trusted-publishing
+          fi

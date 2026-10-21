@@ -26,10 +26,10 @@ and [Konsole colors](https://www.opendesktop.org/p/2214176/).
 
 ## Install
 
-From [Open VSX](https://open-vsx.org/extension/dune/dune-punk):
+From [Open VSX](https://open-vsx.org/extension/spacedevin/dune-punk):
 
 ```sh
-dune --install-extension dune.dune-punk
+dune --install-extension spacedevin.dune-punk
 ```
 
 In VS Code, VSCodium or Cursor, search the extensions view for **Dune Punk**.
