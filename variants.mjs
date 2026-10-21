@@ -248,6 +248,46 @@ const samurai = {
   }
 };
 
+// Edgerunner — the three-colour 2077 HUD: HUD yellow frames/selection, ICE cyan headings & data,
+// alarm red for alerts/badges, on near-black.
+const HUD = { yellow: "#FCEE0A", cyan: "#5EF6FF", red: "#FF003C", bg: "#0D1014", panel: "#0A0C0F", well: "#07090B" };
+const edgerunner = {
+  file: "dune-punk-edgerunner-color-theme.json",
+  name: "Dune Punk Edgerunner",
+  editor: HUD.bg,
+  widget: HUD.panel,
+  input: HUD.well,
+  raised: mix(HUD.yellow, HUD.bg, 0.06),
+  frame: HUD.yellow,
+  frameDim: mix(HUD.yellow, HUD.bg, 0.4),
+  frame2: HUD.cyan,
+  text: "#D9DEE2",
+  textBright: "#FFFFFF",
+  textMuted: mix("#D9DEE2", HUD.bg, 0.66),
+  textFaint: mix("#D9DEE2", HUD.bg, 0.42),
+  tabInactiveFg: mix("#D9DEE2", HUD.bg, 0.66),
+  hot: HUD.red,
+  data: HUD.cyan,
+  error: HUD.red,
+  warning: HUD.yellow,
+  success: D.green0,
+  info: HUD.cyan,
+  seg: [HUD.yellow, HUD.cyan, HUD.red, HUD.yellow],
+  labels: ['"// NC-NET"', '"SECURE"'],
+  syntax: {
+    keyword: HUD.red, storage: HUD.red, func: HUD.yellow, type: HUD.cyan, iface: HUD.cyan,
+    string: mix(HUD.yellow, "#FFFFFF", 0.35), number: D.orange, comment: "#6B737B", property: HUD.cyan, variable: "#D9DEE2",
+    varSpecial: HUD.red, tag: HUD.red, attr: HUD.yellow, constant: D.pink0, operator: HUD.yellow,
+    punct: mix("#D9DEE2", HUD.bg, 0.55), regex: D.green0, invalid: HUD.red, deco: HUD.cyan, jsonKey: HUD.cyan
+  },
+  ansi: {
+    black: HUD.panel, red: HUD.red, green: D.green0, yellow: HUD.yellow,
+    blue: D.purple0, magenta: D.magenta0, cyan: HUD.cyan, white: "#D9DEE2",
+    brBlack: "#4A525A", brRed: D.red2, brGreen: D.yellow1, brYellow: mix(HUD.yellow, "#FFFFFF", 0.5),
+    brBlue: "#B39DF0", brMagenta: D.pink0, brCyan: "#9FFAFF", brWhite: "#FFFFFF"
+  }
+};
+
 // Shared Daemon/Kvantum structure for every variant: the same title band, flat single surface,
 // slim dividers, buttons, tabs, status bar, transparency and motion — only the colours differ.
 // frame = band + outlines, frame2 = active outline/bar/tick, editor = the one surface.
@@ -292,4 +332,4 @@ const punk = (v) => {
   };
 };
 
-export const VARIANTS = [daemon, punk(netrunner), punk(arasaka), punk(samurai)];
+export const VARIANTS = [daemon, punk(netrunner), punk(arasaka), punk(samurai), punk(edgerunner)];

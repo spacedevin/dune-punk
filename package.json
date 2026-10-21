@@ -1,7 +1,7 @@
 {
   "name": "dune-punk",
   "displayName": "Dune Punk",
-  "description": "Full-app cyberpunk theme collection for Dune, built on the Daemon 2.0 palette — chamfered neon frames, cut-corner segments, scanline canvas, HUD motion, and a matching hex-badge icon theme. Four variants: Daemon, Netrunner, Arasaka, Samurai.",
+  "description": "Full-app cyberpunk theme collection for Dune, built on the Daemon 2.0 palette \u2014 chamfered neon frames, cut-corner segments, scanline canvas, HUD motion, and a matching hex-badge icon theme. Four variants: Daemon, Netrunner, Arasaka, Samurai.",
   "version": "0.1.0",
   "publisher": "dune",
   "license": "MIT",
@@ -50,6 +50,12 @@
         "label": "Dune Punk Samurai",
         "uiTheme": "vs-dark",
         "path": "./themes/dune-punk-samurai-color-theme.json"
+      },
+      {
+        "label": "Dune Punk Edgerunner",
+        "uiTheme": "vs-dark",
+        "path": "./themes/dune-punk-edgerunner-color-theme.json",
+        "id": "Dune Punk Edgerunner"
       }
     ],
     "iconThemes": [
@@ -69,7 +75,7 @@
         "id": "dune.punk",
         "label": "Dune Punk",
         "order": 4,
-        "blurb": "Neon on burgundy night. Wake up, Samurai — the city needs a commit.",
+        "blurb": "Neon on burgundy night. Wake up, Samurai \u2014 the city needs a commit.",
         "themes": [
           "Dune Punk Daemon",
           "Dune Punk Netrunner",
