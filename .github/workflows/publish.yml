@@ -1,0 +1,21 @@
+name: Publish
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # Theme JSONs are generated from palette.mjs / variants.mjs; the Dune key list is optional at
+      # build time (validation skips the key-name check when it is absent).
+      - run: node build.mjs
+      - run: npx -y @vscode/vsce package --no-dependencies
+      - name: Publish to Open VSX
+        run: npx -y ovsx publish *.vsix -p "$OVSX_PAT"
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}

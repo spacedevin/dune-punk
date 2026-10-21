@@ -1,11 +1,23 @@
 {
   "name": "dune-punk",
   "displayName": "Dune Punk",
-  "description": "Full-app cyberpunk theme collection for Dune, built on the Daemon 2.0 palette \u2014 chamfered neon frames, cut-corner segments, scanline canvas, HUD motion, and a matching hex-badge icon theme. Four variants: Daemon, Netrunner, Arasaka, Samurai.",
+  "description": "Cyberpunk 2077 / Daemon 2.0 theme collection with a matching icon theme. Five variants: Daemon, Netrunner, Arasaka, Samurai, Edgerunner. Full editor, terminal and workbench colors in VS Code, VSCodium and Cursor; in Dune it also restyles the whole app (chamfered frames, Kvantum controls, scanlines, HUD motion).",
   "version": "0.1.0",
   "publisher": "dune",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/spacedevin/dune-punk.git"
+  },
+  "homepage": "https://github.com/spacedevin/dune-punk#readme",
+  "bugs": {
+    "url": "https://github.com/spacedevin/dune-punk/issues"
+  },
   "icon": "icon.png",
+  "galleryBanner": {
+    "color": "#210E15",
+    "theme": "dark"
+  },
   "engines": {
     "vscode": "^1.70.0"
   },
@@ -14,16 +26,20 @@
   ],
   "keywords": [
     "theme",
+    "color-theme",
+    "icon-theme",
     "cyberpunk",
+    "cyberpunk 2077",
     "daemon",
     "neon",
-    "icon-theme",
+    "dark",
     "dune"
   ],
   "scripts": {
     "build": "node build.mjs",
     "dev-install": "node build.mjs && sh scripts/dev-install.sh",
-    "package": "node build.mjs && npx @vscode/vsce package"
+    "package": "node build.mjs && npx -y @vscode/vsce package --no-dependencies",
+    "publish:ovsx": "node build.mjs && npx -y ovsx publish --no-dependencies -p $OVSX_PAT"
   },
   "contributes": {
     "themes": [

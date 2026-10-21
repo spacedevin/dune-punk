@@ -26,9 +26,30 @@ and [Konsole colors](https://www.opendesktop.org/p/2214176/).
 
 ## Install
 
+From [Open VSX](https://open-vsx.org/extension/dune/dune-punk):
+
 ```sh
-dune --install-extension dune.dune-punk   # once published
+dune --install-extension dune.dune-punk
 ```
+
+In VS Code, VSCodium or Cursor, search the extensions view for **Dune Punk**.
+
+### What you get where
+
+| | Dune | VS Code / VSCodium / Cursor |
+|---|---|---|
+| Editor, syntax, terminal, git, diff colors | ✓ | ✓ |
+| Workbench colors (side bar, tabs, status bar, menus, inputs) | ✓ | ✓ |
+| Icon themes (`dune-punk-icons`, `dune-punk-circles`) | ✓ | ✓ |
+| Chamfered frames, Kvantum buttons / inputs / tabs, title band, scanlines, motion | ✓ | — |
+| Transparent window, per-panel accent edges (Edgerunner) | ✓ | — |
+
+The Dune-only parts live in `dune.*` color keys and top-level theme fields that other editors ignore.
+
+## Publishing
+
+Tag a release (`git tag v0.1.1 && git push --tags`); the **Publish** workflow builds, packages and
+publishes to Open VSX with the `OVSX_PAT` repository secret. Locally: `OVSX_PAT=… npm run publish:ovsx`.
 
 For local development:
 
