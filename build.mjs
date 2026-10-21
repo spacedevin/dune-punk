@@ -134,7 +134,7 @@ function duneChrome(p) {
     "dune.surface-panel": p.panel,
     "dune.surface-activityBar": p.sidebar,
     // Mirror of the title band: bottom-right corner cut at 45° with a solid tick in the corner.
-    "dune.surface-statusBar": p.seamlessStatus ? `linear-gradient(315deg, ${p.frame} 0 6px, transparent 6px), linear-gradient(180deg, ${p.frame} 0 1px, transparent 1px), linear-gradient(315deg, transparent 0 13px, ${p.sidebar} 13px)` : p.plainStatus ? `linear-gradient(180deg, ${p.error} 0 1px, transparent 1px), ${p.sidebar}` : p.sidebar,
+    "dune.surface-statusBar": p.seamlessStatus ? `linear-gradient(180deg, ${p.frame} 0 1px, transparent 1px), linear-gradient(315deg, transparent 0 13px, ${p.sidebar} 13px)` : p.plainStatus ? `linear-gradient(180deg, ${p.error} 0 1px, transparent 1px), ${p.sidebar}` : p.sidebar,
     "dune.surface-widget": p.widget,
     "dune.surface-overlay": p.widget,
     "dune.surface-input": p.input,
@@ -267,7 +267,7 @@ function duneChrome(p) {
     "dune.titlebar-radius": "0px",
     // Aurorae band: top-left corner cut at 45°.
     "dune.surface-titleBar": K && onTitle
-      ? `linear-gradient(135deg, ${p.titleBg} 0 6px, transparent 6px), linear-gradient(135deg, transparent 0 13px, ${p.titleBg} 13px)`
+      ? `linear-gradient(135deg, transparent 0 13px, ${p.titleBg} 13px)`
       : K && !onTitle
       ? `linear-gradient(180deg, ${p.frame} 0 3px, transparent 3px), linear-gradient(0deg, ${p.frame} 0 1px, transparent 1px), ${p.titleBg}`
       : `linear-gradient(0deg, ${p.frame} 0 1px, transparent 1px), ${p.titleBg}`,
