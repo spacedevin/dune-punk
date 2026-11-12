@@ -248,7 +248,7 @@ const samurai = {
   }
 };
 
-// Edgerunner — the three-colour 2077 HUD: HUD yellow frames/selection, ICE cyan headings & data,
+// Edgerunner — the three-color 2077 HUD: HUD yellow frames/selection, ICE cyan headings & data,
 // alarm red for alerts/badges, on near-black.
 // Exact Netrunner Notes palette (getpopcraft/foldable-sim examples/tailwind): volt / ice / blood.
 const HUD = { yellow: "#FCEE0A", cyan: "#00F0FF", red: "#FF003C", bg: "#0E0F16", panel: "#0E0F16", well: "#07070B", edge: "#23252F" };
@@ -291,7 +291,7 @@ const edgerunner = {
 };
 
 // Shared Daemon/Kvantum structure for every variant: the same title band, flat single surface,
-// slim dividers, buttons, tabs, status bar, transparency and motion — only the colours differ.
+// slim dividers, buttons, tabs, status bar, transparency and motion — only the colors differ.
 // frame = band + outlines, frame2 = active outline/bar/tick, editor = the one surface.
 const punk = (v) => {
   const sel = mix(v.frame, v.editor, 0.3);
