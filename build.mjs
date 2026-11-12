@@ -46,8 +46,8 @@ const kbox = (border, fill, s = 6, tick = border) => {
   ].join(", ");
 };
 
-// Kvantum push button: 1px outline with only the bottom-right corner cut, plus Daemon's 3px red bar
-// riding the left edge (60% height, centred). Fill inset 1px so the outline stays a crisp line.
+// Kvantum field box: 1px outline with only the bottom-right corner cut. Fill inset 1px so the outline
+// stays a crisp line.
 const boxBR = (border, fill, s = 7) => {
   const o = s + 0.4;
   return [
@@ -56,7 +56,7 @@ const boxBR = (border, fill, s = 7) => {
   ].join(", ");
 };
 // Kvantum push button, as in the Daemon widget gallery: a detached full-height bar on the left (3px,
-// 2px gap), then ONE-colour 1px outline with the bottom-right corner cut; optional solid corner tick.
+// 2px gap), then ONE-color 1px outline with the bottom-right corner cut; optional solid corner tick.
 const kbtn = (bar, border, fill, tick) => [
   ...(tick ? [`linear-gradient(315deg, ${tick} 0 4px, transparent 4px)`] : []),
   `linear-gradient(${bar}, ${bar}) 0 0 / 3px 100% no-repeat`,
@@ -86,7 +86,7 @@ const ktab = (border, fill) => [
   `linear-gradient(45deg, transparent 0 7.4px, ${border} 7.4px)`
 ].join(", ");
 
-// Hover fill: the frame colour faintly over the sidebar — visible, but well below the active fill.
+// Hover fill: the frame color faintly over the sidebar — visible, but well below the active fill.
 const hoverFill = (p) => mix(p.frame2, p.sidebar, 0.18);
 
 // Daemon buttons are dark outlined cards: frame border, accent label (body text if the accent
@@ -95,6 +95,9 @@ const btnFg = (p) => (contrast(p.accent, p.button ?? p.widget) >= 4.5 ? p.accent
 
 // Barcode ticks (a nod to Daemon's barcode assets): [x, width] pairs inside the bracket's top arm.
 const BARCODE = [[52, 1.5], [55, 0.8], [57, 2.4], [61, 0.8], [63, 1.2], [66, 2.4], [70, 0.8], [72, 1.5], [75, 0.8], [77, 3], [82, 0.8], [84, 1.5]];
+
+// SVG → CSS url() data URI (escapes <, > and #).
+const svgUrl = (svg) => `url("data:image/svg+xml,${svg.replace(/</g, "%3C").replace(/>/g, "%3E").replace(/#/g, "%23")}")`;
 
 function cornerSvg(p, mirror) {
   const y = (v) => (mirror ? 160 - v : v);
@@ -106,13 +109,12 @@ function cornerSvg(p, mirror) {
   const hot = `<rect x='7' y='${mirror ? 160 - 31 : 26}' width='5' height='5' fill='${enc(!mirror && p.titleIsBlock ? p.titleFg : p.frame2)}'/>`;
   const ticks = BARCODE.map(([x, w]) => `<rect x='${x}' y='${mirror ? 160 - 8 : 4}' width='${w}' height='4' fill='${enc(p.frame)}' fill-opacity='0.7'/>`).join("");
   const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 160'><path fill='${enc(p.frame)}' d='${cap}'/>${topArm}${leftArm}${hot}${ticks}</svg>`;
-  return `url("data:image/svg+xml,${svg.replace(/</g, "%3C").replace(/>/g, "%3E")}")`;
+  return svgUrl(svg);
 }
 
 // Window canvas wallpaper (Daemon 2.0 wallpaper): a dot-matrix grid fading out toward the bottom,
 // faint 45°-bending circuit traces in the dim frame color, over a bg0 → near-black vertical wash.
 // No CRT scanlines — Daemon never uses them.
-const svgUrl = (svg) => `url("data:image/svg+xml,${svg.replace(/</g, "%3C").replace(/>/g, "%3E").replace(/#/g, "%23")}")`;
 function canvasImage(p) {
   const dots = svgUrl(`<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12'><rect x='5' y='5' width='1.5' height='1.5' fill='${p.frame}' fill-opacity='0.16'/></svg>`);
   const traces = svgUrl(
@@ -140,7 +142,7 @@ function duneChrome(p) {
     "dune.surface-panel": p.panel,
     "dune.surface-activityBar": p.sidebar,
     // Mirror of the title band: bottom-right corner cut at 45° with a solid tick in the corner.
-    "dune.surface-statusBar": p.seamlessStatus ? `linear-gradient(315deg, ${p.frame} 0 6px, transparent 6px), linear-gradient(180deg, ${p.frame} 0 1px, transparent 1px), linear-gradient(315deg, transparent 0 13px, ${p.sidebar} 13px)` : p.plainStatus ? `linear-gradient(180deg, ${p.error} 0 1px, transparent 1px), ${p.sidebar}` : p.sidebar,
+    "dune.surface-statusBar": p.seamlessStatus ? `${marker(p.frame, 315)}, linear-gradient(180deg, ${p.frame} 0 1px, transparent 1px), linear-gradient(315deg, transparent 0 13px, ${p.sidebar} 13px)` : p.plainStatus ? `linear-gradient(180deg, ${p.error} 0 1px, transparent 1px), ${p.sidebar}` : p.sidebar,
     "dune.surface-widget": p.widget,
     "dune.surface-overlay": p.widget,
     "dune.surface-input": p.input,
@@ -384,8 +386,8 @@ function duneChrome(p) {
     // Menus / pickers / popovers / palette / sheets: chamfered Kvantum card.
     "dune.overlay-card-bg": K ? kbox(p.frame, p.widget, 10, p.frame) : p.widget,
     // Kvantum inputs: outline with bottom-right cut + solid tick top-left; cyan on focus.
-    "dune.field-bg": K ? `linear-gradient(135deg, ${p.frame} 0 5px, transparent 5px), ${boxBR(p.frame, p.input, 7)}` : p.input,
-    "dune.field-bg-focus": K ? `linear-gradient(135deg, ${p.frame2} 0 5px, transparent 5px), ${boxBR(p.frame2, p.input, 7)}` : p.input,
+    "dune.field-bg": K ? `${marker(p.frame, 135, 5)}, ${boxBR(p.frame, p.input, 7)}` : p.input,
+    "dune.field-bg-focus": K ? `${marker(p.frame2, 135, 5)}, ${boxBR(p.frame2, p.input, 7)}` : p.input,
     "dune.field-border": K ? "transparent" : p.frame,
     "dune.field-border-focus": K ? "transparent" : p.focus ?? p.hot,
     "dune.select-chevron": `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='${enc(p.frame2)}' stroke-width='2.5' stroke-linecap='square'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`,
