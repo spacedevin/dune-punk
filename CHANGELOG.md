@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- Hover states share the active widgets' distortion: activity-bar items, Settings nav rows,
+  bottom-panel / zone tabs and Agents panel rows now hover with the scanlined Kvantum box (or tab),
+  in a quieter frame-tinted fill, and glitch like buttons. Needs Dune with the
+  `panel-tab-hover-bg` / `row-hover-bg` theme keys.
+
 ## 0.1.0
 
 - Initial release: four Daemon 2.0 variants (Daemon, Netrunner, Arasaka, Samurai) with full

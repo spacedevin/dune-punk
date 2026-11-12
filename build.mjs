@@ -86,6 +86,9 @@ const ktab = (border, fill) => [
   `linear-gradient(45deg, transparent 0 7.4px, ${border} 7.4px)`
 ].join(", ");
 
+// Hover fill: the frame colour faintly over the sidebar — visible, but well below the active fill.
+const hoverFill = (p) => mix(p.frame2, p.sidebar, 0.18);
+
 // Daemon buttons are dark outlined cards: frame border, accent label (body text if the accent
 // can't hold 4.5:1 on the dark fill).
 const btnFg = (p) => (contrast(p.accent, p.button ?? p.widget) >= 4.5 ? p.accent : p.text);
@@ -301,13 +304,13 @@ function duneChrome(p) {
     "dune.activity-item-radius": "0px",
     "dune.activity-item-gap": "2px",
     "dune.activity-item-fg": p.text,
-    "dune.activity-item-hover-bg": K ? kbox(p.frame2, mix(p.text, p.sidebar, 0.07), 5) : `${stripe(p.hot)}, ${a(p.text, "14")}`,
+    "dune.activity-item-hover-bg": K ? `${scan()}, ${kbox(p.frame2, hoverFill(p), 5)}` : `${stripe(p.hot)}, ${a(p.text, "14")}`,
     "dune.activity-item-active-bg": K ? `${scan()}, ${kbox(p.frame2, p.accent, 5)}` : `${stripe(p.accent)}, ${cutBR(a(p.accent, "30"), 8)}`,
     "dune.activity-item-radius-top": "0px",
     "dune.activity-item-fg-top": p.textMuted,
     // Top-mode rail buttons (the default layout): the same Kvantum button as everywhere else.
     "dune.activity-item-active-bg-top": K ? `${scan()}, ${kbtn(p.frame2, p.frame2, p.accent, p.frame2)}` : a(p.text, "14"),
-    "dune.activity-item-hover-bg-top": K ? kbtn(p.frame, p.frame, p.button) : a(p.text, "0F"),
+    "dune.activity-item-hover-bg-top": K ? `${scan()}, ${kbtn(p.frame2, p.frame2, hoverFill(p))}` : a(p.text, "0F"),
     "dune.activity-seg-1": K ? "transparent" : stripe(a(p.seg[0], "AA"), 2),
     "dune.activity-seg-2": K ? "transparent" : stripe(a(p.seg[1], "AA"), 2),
     "dune.activity-seg-3": K ? "transparent" : stripe(a(p.seg[2], "AA"), 2),
@@ -399,6 +402,10 @@ function duneChrome(p) {
     "dune.composer-focus-shadow": K ? `0 0 12px ${a(p.frame2, "55")}` : "none",
     "dune.panel-tab-active-bg": K ? `${scan()}, ${ktab(p.frame2, p.accent)}` : a(p.text, "14"),
     "dune.panel-tab-active-border": K ? "transparent" : p.frame,
+    // Hovered tabs and Agents-panel rows: the active shapes in a quieter fill, so every hover
+    // reads as the same Kvantum widget (and glitches like a button, below).
+    "dune.panel-tab-hover-bg": K ? `${scan()}, ${ktab(p.frame2, hoverFill(p))}` : a(p.text, "12"),
+    "dune.row-hover-bg": K ? `${scan()}, ${kbox(p.frame2, hoverFill(p), 5)}` : `${stripe(p.hot)}, ${a(p.text, "0F")}`,
     // ——— Motion (all reduced-motion guarded by the app) ———
     // Buttons glitch (RGB split) once on hover; a newly selected row flickers like a neon tube;
     // a faint light band sweeps the title band every 9s.
@@ -432,7 +439,7 @@ function duneChrome(p) {
     "dune.settings-nav-seg-2": navSeg(1),
     "dune.settings-nav-seg-3": navSeg(2),
     "dune.settings-nav-seg-4": navSeg(3),
-    "dune.settings-nav-hover-bg": K ? kbox(p.frame2, mix(p.text, p.sidebar, 0.07), 5) : `${stripe(p.hot)}, ${a(p.text, "12")}`,
+    "dune.settings-nav-hover-bg": K ? `${scan()}, ${kbox(p.frame2, hoverFill(p), 5)}` : `${stripe(p.hot)}, ${a(p.text, "12")}`,
     "dune.settings-nav-active-bg": K ? `${scan()}, ${kbox(p.frame2, p.accent, 5)}` : cut(p.accent, 6),
     "dune.settings-nav-active-fg": p.accentFg,
     "dune.settings-scope-active-bg": p.accent,
